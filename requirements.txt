@@ -32,7 +32,6 @@ reportlab==4.2.5
 scipy==1.14.1
 six==1.17.0
 starlette==1.0.0
--e git+https://github.com/ebouna3584/stock-pattern-engine.git@8b2605a8bb45e20c1c4c4eda40f9442cb28cac9f#egg=stock_pattern_engine
 typing-inspection==0.4.2
 typing_extensions==4.15.0
 uvicorn==0.46.0
