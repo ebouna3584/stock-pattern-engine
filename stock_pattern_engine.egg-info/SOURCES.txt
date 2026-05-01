@@ -1,0 +1,7 @@
+pyproject.toml
+stock_pattern_engine.egg-info/PKG-INFO
+stock_pattern_engine.egg-info/SOURCES.txt
+stock_pattern_engine.egg-info/dependency_links.txt
+stock_pattern_engine.egg-info/requires.txt
+stock_pattern_engine.egg-info/top_level.txt
+tests/test_core.py

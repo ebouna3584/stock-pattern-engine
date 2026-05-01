@@ -1,0 +1,105 @@
+{
+  "session_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "analysis_timestamp": "2024-04-22T14:32:11.042Z",
+  "tickers_analyzed": 1,
+  "results": [
+    {
+      "ticker": "AAPL",
+      "analysis_timestamp": "2024-04-22T14:32:11.042Z",
+      "timeframe_start": "2024-01-02",
+      "timeframe_end": "2024-04-22",
+      "total_candles": 80,
+      "current_price": 187.13,
+      "current_rsi": 61.4,
+      "current_macd": 0.82,
+      "patterns_detected": [
+        {
+          "pattern_type": "ascending_triangle",
+          "trend_direction": "BULLISH",
+          "confidence_score": 74.5,
+          "breakout_level": 190.00,
+          "support_line": {
+            "slope": 0.0173,
+            "intercept": 175.10,
+            "r_squared": 0.921,
+            "start_price": 175.10,
+            "end_price": 186.51,
+            "direction": "ascending"
+          },
+          "resistance_line": {
+            "slope": 0.0003,
+            "intercept": 189.95,
+            "r_squared": 0.887,
+            "start_price": 189.95,
+            "end_price": 190.00,
+            "direction": "flat"
+          },
+          "slope_support": 0.0173,
+          "slope_resistance": 0.0003,
+          "volatility_estimate": 0.183,
+          "volume_confirmation": 1.62,
+          "volume_confirmed": true,
+          "start_date": "2024-01-02",
+          "end_date": "2024-04-22",
+          "candles_analyzed": 80,
+          "raw_notes": null
+        }
+      ],
+      "top_pattern": {
+        "pattern_type": "ascending_triangle",
+        "trend_direction": "BULLISH",
+        "confidence_score": 74.5,
+        "breakout_level": 190.00
+      },
+      "risk_assessment": {
+        "risk_score": "MEDIUM",
+        "risk_numeric": 38.2,
+        "slope_risk": 0.087,
+        "volatility_risk": 0.366,
+        "breakout_distance_risk": 0.152,
+        "rsi_confirmation": 0.800,
+        "macd_confirmation": 0.900,
+        "volume_surge_factor": 1.62,
+        "false_breakout_probability": 0.280,
+        "expected_upside_pct": 7.42,
+        "expected_downside_pct": 1.88,
+        "holding_time": "MEDIUM"
+      },
+      "trade_recommendation": {
+        "signal": "BUY",
+        "entry_price": 190.38,
+        "stop_loss": 187.16,
+        "take_profit_1": 204.89,
+        "take_profit_2": 213.44,
+        "take_profit_3": 219.77,
+        "risk_reward_ratio": 4.51,
+        "position_size_pct": 3.12,
+        "atr_used": 1.48,
+        "confidence_adjusted_signal": "HIGH CONFIDENCE",
+        "summary_explanation": "HIGH CONFIDENCE | Bullish Ascending Triangle detected. Pattern confidence: 75/100. Signal: BUY. Entry: 190.38, SL: 187.16, TP1: 204.89 | TP2: 213.44 | TP3: 219.77. R/R: 4.51x. Risk: MEDIUM (38/100). False breakout probability: 28%. DISCLAIMER: This is probabilistic technical analysis only. Not financial advice."
+      },
+      "disclaimer": "This output is probabilistic technical analysis only. It does not guarantee profit. Past patterns do not guarantee future results. Always apply independent risk management before executing any trade."
+    }
+  ],
+  "summary_table": [
+    {
+      "ticker": "AAPL",
+      "current_price": 187.13,
+      "patterns_found": 1,
+      "top_pattern": "ascending_triangle",
+      "confidence": 74.5,
+      "trend_direction": "BULLISH",
+      "breakout_level": 190.00,
+      "signal": "BUY",
+      "entry": 190.38,
+      "stop_loss": 187.16,
+      "take_profit_1": 204.89,
+      "risk_score": "MEDIUM",
+      "risk_numeric": 38.2,
+      "expected_upside_pct": 7.42,
+      "holding_time": "MEDIUM",
+      "rsi": 61.4,
+      "macd": 0.82
+    }
+  ]
+}

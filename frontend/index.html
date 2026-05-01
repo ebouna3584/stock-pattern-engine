@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Pattern Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f172a;
+      --card:      #1e293b;
+      --border:    #334155;
+      --text:      #f1f5f9;
+      --muted:     #94a3b8;
+      --green:     #10b981;
+      --red:       #ef4444;
+      --yellow:    #f59e0b;
+      --blue:      #3b82f6;
+      --green-bg:  rgba(16,185,129,0.12);
+      --red-bg:    rgba(239,68,68,0.12);
+      --yellow-bg: rgba(245,158,11,0.12);
+      --blue-bg:   rgba(59,130,246,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── Navbar ──────────────────────────────────────────────── */
+    .navbar {
+      background: rgba(15,23,42,0.95);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .navbar-brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .navbar-brand span { color: var(--blue); }
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .badge-version {
+      background: var(--blue-bg);
+      color: var(--blue);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: 99px;
+      padding: 2px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .navbar-disclaimer {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: right;
+      max-width: 340px;
+      line-height: 1.3;
+    }
+
+    /* ── Layout ──────────────────────────────────────────────── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────── */
+    .hero {
+      padding: 3.5rem 0 2.5rem;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero h1 .accent { -webkit-text-fill-color: var(--blue); }
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* ── Workflow cards ──────────────────────────────────────── */
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin: 2rem 0;
+    }
+    @media (max-width: 768px) {
+      .workflow { grid-template-columns: 1fr; }
+    }
+    .step-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: border-color 0.2s;
+    }
+    .step-card:hover { border-color: #475569; }
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      border: 1px solid rgba(59,130,246,0.4);
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .step-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .step-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.25rem;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+    }
+    .btn-primary:hover:not(:disabled) { background: #2563eb; }
+    .btn-success {
+      background: var(--green);
+      color: #fff;
+    }
+    .btn-success:hover:not(:disabled) { background: #059669; }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover:not(:disabled) { border-color: #64748b; background: rgba(255,255,255,0.04); }
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .btn-sm { padding: 0.4rem 0.9rem; font-size: 12px; }
+
+    /* ── Drop zone ───────────────────────────────────────────── */
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 1.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .drop-zone:hover, .drop-zone.dragging {
+      border-color: var(--blue);
+      background: var(--blue-bg);
+    }
+    .drop-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .drop-zone-icon { font-size: 1.75rem; margin-bottom: 0.4rem; }
+    .drop-zone-text { color: var(--muted); font-size: 12px; }
+    .drop-zone-filename {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--blue);
+      margin-top: 0.25rem;
+      word-break: break-all;
+    }
+
+    /* ── Upload status ───────────────────────────────────────── */
+    .upload-status {
+      border-radius: 8px;
+      padding: 0.6rem 1rem;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 0.75rem;
+      display: none;
+    }
+    .upload-status.success {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(16,185,129,0.25);
+      display: block;
+    }
+    .upload-status.error {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.25);
+      display: block;
+    }
+
+    /* ── Error banner ────────────────────────────────────────── */
+    .error-banner {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1rem 0;
+      font-size: 13px;
+      display: none;
+    }
+    .error-banner.visible { display: block; }
+    .error-banner strong { display: block; margin-bottom: 0.25rem; }
+
+    /* ── Loading ─────────────────────────────────────────────── */
+    #loading {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 3rem 0;
+    }
+    #loading.visible { display: flex; }
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Results ─────────────────────────────────────────────── */
+    #results { display: none; margin-top: 2.5rem; }
+    #results.visible { display: block; }
+
+    /* Summary bar */
+    .summary-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .summary-ticker {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .summary-price {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .summary-pattern {
+      font-size: 14px;
+      color: var(--muted);
+      flex: 1;
+    }
+    .summary-pattern strong { color: var(--text); }
+
+    /* Signal badge */
+    .signal-badge {
+      padding: 0.4rem 1.1rem;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .signal-badge.BUY    { background: var(--green);  color: #052e16; }
+    .signal-badge.SELL   { background: var(--red);    color: #450a0a; }
+    .signal-badge.WATCH  { background: var(--yellow); color: #451a03; }
+    .signal-badge.HOLD   { background: var(--yellow); color: #451a03; }
+
+    /* Metric cards row */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 768px) {
+      .metrics-row { grid-template-columns: repeat(2, 1fr); }
+    }
+    .metric-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+    }
+    .metric-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+    .metric-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .metric-value.green  { color: var(--green); }
+    .metric-value.yellow { color: var(--yellow); }
+    .metric-value.red    { color: var(--red); }
+    .metric-value.blue   { color: var(--blue); }
+
+    /* Confidence bar */
+    .conf-bar-wrap {
+      margin-top: 0.4rem;
+      height: 5px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .conf-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.6s ease;
+    }
+
+    /* Two-col layout for trade plan + patterns */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    @media (max-width: 900px) {
+      .results-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Trade plan */
+    .trade-plan {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .trade-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+    }
+    .trade-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .trade-item-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .trade-item-value {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .trade-item-value.entry  { color: var(--blue); }
+    .trade-item-value.sl     { color: var(--red); }
+    .trade-item-value.tp     { color: var(--green); }
+    .trade-item-value.rr     { color: var(--yellow); }
+    .trade-divider {
+      grid-column: 1 / -1;
+      height: 1px;
+      background: var(--border);
+      margin: 0.25rem 0;
+    }
+
+    /* Patterns table */
+    .patterns-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      overflow: hidden;
+    }
+    .patterns-table-wrap {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead th {
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid rgba(51,65,85,0.5);
+      color: var(--text);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.025); }
+    .dir-bullish { color: var(--green); font-weight: 600; }
+    .dir-bearish { color: var(--red); font-weight: 600; }
+    .vol-yes { color: var(--green); }
+    .vol-no  { color: var(--muted); }
+
+    /* No patterns box */
+    .no-patterns-box {
+      background: var(--green-bg);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-top: 0.5rem;
+      font-size: 13px;
+      color: var(--green);
+      line-height: 1.5;
+    }
+
+    /* Download row */
+    .download-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .download-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      margin-right: 0.25rem;
+    }
+
+    /* ── Section separator ───────────────────────────────────── */
+    .section-sep {
+      height: 1px;
+      background: var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4rem;
+      line-height: 1.6;
+    }
+    footer strong { color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────────────────────────────── -->
+<nav class="navbar">
+  <div class="navbar-brand">📈 Stock <span>Pattern Engine</span></div>
+  <div class="navbar-right">
+    <span class="badge-version">v1.0.0-mvp</span>
+    <p class="navbar-disclaimer">For educational purposes only. Not financial advice.</p>
+  </div>
+</nav>
+
+<!-- ── Hero ────────────────────────────────────────────────────────────────── -->
+<div class="container">
+  <section class="hero">
+    <h1>Upload your stock data.<br /><span class="accent">Get institutional-grade pattern analysis.</span></h1>
+    <p>Detect chart patterns, assess risk automatically, and receive actionable trade setups — in seconds.</p>
+  </section>
+
+  <!-- ── 3-Step Workflow ─────────────────────────────────────────────────── -->
+  <div class="workflow">
+
+    <!-- Step 1 -->
+    <div class="step-card">
+      <div>
+        <span class="step-number">1</span>
+      </div>
+      <div class="step-title">Download Template</div>
+      <div class="step-desc">
+        Get the standardised Excel file (.xlsx) with pre-filled example data for AAPL, TSLA, and NVDA across 240 rows. All required columns are included.
+      </div>
+      <button class="btn btn-primary" onclick="downloadTemplate()">
+        ⬇ Download Template
+      </button>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="step-card">
+      <div>
+        <span class="step-number">2</span>
+      </div>
+      <div class="step-title">Fill &amp; Export as CSV</div>
+      <div class="step-desc">
+        Replace the example rows with your own OHLCV data. Keep the header row intact. When done, export:
+        <br /><br />
+        <strong>File → Save As → CSV UTF-8 (Comma delimited)</strong>
+        <br /><br />
+        Minimum 20 rows required. 50+ rows recommended for best results.
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="step-card">
+      <div>
+        <span class="step-number">3</span>
+      </div>
+      <div class="step-title">Upload &amp; Analyze</div>
+      <div class="step-desc">Drop your CSV below, then click Analyze.</div>
+
+      <div class="drop-zone" id="dropZone"
+           ondragover="event.preventDefault(); this.classList.add('dragging')"
+           ondragleave="this.classList.remove('dragging')"
+           ondrop="handleFileDrop(event)">
+        <input type="file" id="fileInput" accept=".csv" onchange="handleFileSelect(event)" />
+        <div class="drop-zone-icon">📂</div>
+        <div class="drop-zone-text">Drag &amp; drop CSV here, or click to browse</div>
+        <div class="drop-zone-filename" id="fileNameDisplay"></div>
+      </div>
+
+      <div class="upload-status" id="uploadStatus"></div>
+
+      <div style="display:flex; gap:0.75rem; margin-top:0.5rem;">
+        <button class="btn btn-outline btn-sm" id="uploadBtn" onclick="uploadFile()" disabled>
+          ⬆ Upload
+        </button>
+        <button class="btn btn-success" id="analyzeBtn" onclick="uploadAndAnalyze()" disabled>
+          🔍 Analyze
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Error banner ──────────────────────────────────────────────────────── -->
+  <div class="error-banner" id="errorBanner">
+    <strong>Analysis failed</strong>
+    <span id="errorMessage"></span>
+  </div>
+
+  <!-- ── Loading ─────────────────────────────────────────────────────────── -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Analyzing patterns…</div>
+  </div>
+
+  <!-- ── Results ─────────────────────────────────────────────────────────── -->
+  <section id="results">
+
+    <!-- Summary bar -->
+    <div class="summary-bar">
+      <div class="summary-ticker" id="resTicker">—</div>
+      <div class="summary-price" id="resPrice">—</div>
+      <div class="summary-pattern">
+        Top pattern: <strong id="resTopPattern">—</strong>
+      </div>
+      <span class="signal-badge" id="resSignalBadge">—</span>
+    </div>
+
+    <!-- Metric cards -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label">Confidence Score</div>
+        <div class="metric-value" id="resConfidence">—</div>
+        <div class="conf-bar-wrap">
+          <div class="conf-bar-fill" id="resConfBar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Risk Level</div>
+        <div class="metric-value" id="resRisk">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Expected Upside</div>
+        <div class="metric-value green" id="resUpside">—</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Holding Time</div>
+        <div class="metric-value blue" id="resHolding">—</div>
+      </div>
+    </div>
+
+    <!-- Trade plan + Patterns table -->
+    <div class="results-grid">
+
+      <!-- Trade plan -->
+      <div class="trade-plan">
+        <div class="section-title">Trade Plan</div>
+        <div class="trade-grid">
+          <div class="trade-item">
+            <div class="trade-item-label">Entry Price</div>
+            <div class="trade-item-value entry" id="trEntry">—</div>
+          </div>
+          <div class="trade-item">
+            <div class="trade-item-label">Stop Loss</div>
+            <div class="trade-item-value sl" id="trStopLoss">—</div>
+          </div>
+          <div class="trade-divider"></div>
+          <div class="trade-item">
+            <div class="trade-item-label">Take Profit 1</div>
+            <div class="trade-item-value tp" id="trTP1">—</div>
+          </div>
+          <div class="trade-item">
+            <div class="trade-item-label">Take Profit 2</div>
+            <div class="trade-item-value tp" id="trTP2">—</div>
+          </div>
+          <div class="trade-item">
+            <div class="trade-item-label">Take Profit 3</div>
+            <div class="trade-item-value tp" id="trTP3">—</div>
+          </div>
+          <div class="trade-item">
+            <div class="trade-item-label">Risk / Reward</div>
+            <div class="trade-item-value rr" id="trRR">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patterns table -->
+      <div class="patterns-card">
+        <div class="section-title">Detected Patterns</div>
+        <div id="noPatternsBox" class="no-patterns-box" style="display:none;">
+          No patterns detected in this dataset.
+          <br />
+          <strong>Try uploading more rows (50+ recommended) or a different ticker.</strong>
+        </div>
+        <div class="patterns-table-wrap" id="patternsTableWrap">
+          <table id="patternsTable">
+            <thead>
+              <tr>
+                <th>Pattern</th>
+                <th>Direction</th>
+                <th>Confidence</th>
+                <th>Breakout Level</th>
+                <th>Vol Confirmed</th>
+              </tr>
+            </thead>
+            <tbody id="patternsBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Download report -->
+    <div class="download-row" style="margin-bottom:1.5rem;">
+      <span class="download-label">Download Report:</span>
+      <button class="btn btn-outline btn-sm" onclick="downloadReport('json')">⬇ JSON</button>
+      <button class="btn btn-outline btn-sm" onclick="downloadReport('csv')">⬇ CSV</button>
+      <button class="btn btn-outline btn-sm" onclick="downloadReport('pdf')">⬇ PDF Report</button>
+    </div>
+
+  </section>
+
+  <div class="section-sep"></div>
+</div>
+
+<!-- ── Footer ──────────────────────────────────────────────────────────────── -->
+<footer>
+  <strong>DISCLAIMER:</strong> Stock Pattern Engine provides probabilistic technical analysis only.
+  This is <strong>not financial advice</strong>. Past chart patterns do not guarantee future results.
+  Always conduct your own research and consult a qualified financial advisor before making investment decisions.
+  <br />
+  &copy; 2024 Stock Pattern Engine &mdash; Educational Use Only
+</footer>
+
+<script>
+  const API = window.location.origin;
+  let currentSessionId = null;
+  let selectedFile = null;
+
+  // ── Template download ──────────────────────────────────────────────────────
+  async function downloadTemplate() {
+    try {
+      const res = await fetch(`${API}/api/v1/download_template`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const cd = res.headers.get('content-disposition') || '';
+      const match = cd.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      a.download = match ? match[1].replace(/['"]/g, '') : 'StockPatternTemplate.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      showError('Template download failed: ' + err.message);
+    }
+  }
+
+  // ── File handling ──────────────────────────────────────────────────────────
+  function handleFileDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropZone').classList.remove('dragging');
+    const file = e.dataTransfer.files[0];
+    if (file) setFile(file);
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file) setFile(file);
+  }
+
+  function setFile(file) {
+    selectedFile = file;
+    currentSessionId = null;
+    document.getElementById('fileNameDisplay').textContent = file.name;
+    document.getElementById('uploadStatus').className = 'upload-status';
+    document.getElementById('uploadStatus').textContent = '';
+    document.getElementById('analyzeBtn').disabled = true;
+    document.getElementById('uploadBtn').disabled = false;
+    hideError();
+  }
+
+  // ── Upload only ────────────────────────────────────────────────────────────
+  async function uploadFile() {
+    if (!selectedFile) return;
+    const statusEl = document.getElementById('uploadStatus');
+    const uploadBtn = document.getElementById('uploadBtn');
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Uploading…';
+    statusEl.className = 'upload-status';
+    statusEl.textContent = '';
+    hideError();
+
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      const res = await fetch(`${API}/api/v1/upload_csv`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const d = data.detail;
+        let msgs = 'Upload failed';
+        if (d) {
+          if (Array.isArray(d)) {
+            msgs = d.map(e => e.msg || JSON.stringify(e)).join('; ');
+          } else if (typeof d === 'object') {
+            const errs = Array.isArray(d.errors) && d.errors.length ? d.errors.join(' | ') : '';
+            msgs = d.message ? (errs ? `${d.message} — ${errs}` : d.message) : errs || JSON.stringify(d);
+          } else {
+            msgs = String(d);
+          }
+        }
+        throw new Error(msgs);
+      }
+      currentSessionId = data.session_id;
+      const rowCount = (data.validation && data.validation.row_count) || '?';
+      statusEl.className = 'upload-status success';
+      statusEl.textContent = `✓ File uploaded successfully — ${rowCount} rows loaded`;
+      document.getElementById('analyzeBtn').disabled = false;
+    } catch (err) {
+      statusEl.className = 'upload-status error';
+      statusEl.textContent = '✗ ' + err.message;
+      document.getElementById('analyzeBtn').disabled = true;
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = '⬆ Upload';
+    }
+  }
+
+  // ── Upload + Analyze ───────────────────────────────────────────────────────
+  async function uploadAndAnalyze() {
+    hideError();
+    document.getElementById('results').classList.remove('visible');
+
+    // If we already have a session_id from a prior upload, skip re-upload
+    if (!currentSessionId) {
+      if (!selectedFile) {
+        showError('Please select a CSV file first.');
+        return;
+      }
+      // Upload first
+      await uploadFile();
+      if (!currentSessionId) return; // upload failed
+    }
+
+    showLoading(true);
+
+    try {
+      const res = await fetch(`${API}/api/v1/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: currentSessionId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        const d = data.detail;
+        let msgs = 'Analysis failed';
+        if (d) {
+          if (Array.isArray(d)) {
+            msgs = d.map(e => e.msg || JSON.stringify(e)).join('; ');
+          } else if (typeof d === 'object') {
+            const errs = Array.isArray(d.errors) && d.errors.length ? d.errors.join(' | ') : '';
+            msgs = d.message ? (errs ? `${d.message} — ${errs}` : d.message) : errs || JSON.stringify(d);
+          } else {
+            msgs = String(d);
+          }
+        }
+        throw new Error(msgs);
+      }
+      renderResults(data, currentSessionId);
+    } catch (err) {
+      showError(err.message);
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  // ── Render results ─────────────────────────────────────────────────────────
+  function renderResults(data, sessionId) {
+    currentSessionId = sessionId || data.session_id || currentSessionId;
+
+    const results = data.results;
+    if (!results || results.length === 0) {
+      showError('No results returned from the analysis engine.');
+      return;
+    }
+
+    // Use first result (single ticker or first of multi)
+    const r = results[0];
+    const trade = r.trade_recommendation || {};
+    const risk  = r.risk_assessment || {};
+    const top   = r.top_pattern || null;
+    const patterns = r.patterns_detected || [];
+
+    // Summary bar
+    document.getElementById('resTicker').textContent = r.ticker || '—';
+    document.getElementById('resPrice').textContent =
+      r.current_price != null ? '$' + Number(r.current_price).toFixed(2) : '—';
+
+    const topName = top
+      ? top.pattern_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+      : (patterns.length > 0
+          ? patterns[0].pattern_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+          : 'None detected');
+    document.getElementById('resTopPattern').textContent = topName;
+
+    const signal = trade.signal || 'WATCH';
+    const signalBadge = document.getElementById('resSignalBadge');
+    signalBadge.textContent = signal;
+    signalBadge.className = 'signal-badge ' + signal;
+
+    // Confidence
+    const conf = top ? Number(top.confidence_score) : 0;
+    const confEl = document.getElementById('resConfidence');
+    confEl.textContent = conf ? conf.toFixed(1) + '%' : '—';
+    confEl.className = 'metric-value ' + (conf >= 70 ? 'green' : conf >= 50 ? 'yellow' : 'red');
+    const confBar = document.getElementById('resConfBar');
+    confBar.style.width = Math.min(100, conf) + '%';
+    confBar.style.background = conf >= 70 ? 'var(--green)' : conf >= 50 ? 'var(--yellow)' : 'var(--red)';
+
+    // Risk level
+    const riskScore = risk.risk_score || '—';
+    const riskEl = document.getElementById('resRisk');
+    riskEl.textContent = riskScore;
+    riskEl.className = 'metric-value ' +
+      (riskScore === 'LOW' ? 'green' : riskScore === 'MEDIUM' ? 'yellow' : 'red');
+
+    // Upside
+    const upside = risk.expected_upside_pct != null ? Number(risk.expected_upside_pct) : null;
+    document.getElementById('resUpside').textContent =
+      upside != null ? '+' + upside.toFixed(1) + '%' : '—';
+
+    // Holding time
+    const holding = risk.holding_time || '—';
+    document.getElementById('resHolding').textContent = holding;
+
+    // Trade plan
+    const fmtPrice = v => v != null ? '$' + Number(v).toFixed(2) : '—';
+    document.getElementById('trEntry').textContent    = fmtPrice(trade.entry_price);
+    document.getElementById('trStopLoss').textContent = fmtPrice(trade.stop_loss);
+    document.getElementById('trTP1').textContent      = fmtPrice(trade.take_profit_1);
+    document.getElementById('trTP2').textContent      = fmtPrice(trade.take_profit_2);
+    document.getElementById('trTP3').textContent      = fmtPrice(trade.take_profit_3);
+    document.getElementById('trRR').textContent =
+      trade.risk_reward_ratio != null ? Number(trade.risk_reward_ratio).toFixed(2) + 'x' : '—';
+
+    // Patterns table
+    const tbody = document.getElementById('patternsBody');
+    const tableWrap = document.getElementById('patternsTableWrap');
+    const noBox = document.getElementById('noPatternsBox');
+    tbody.innerHTML = '';
+
+    if (patterns.length === 0) {
+      tableWrap.style.display = 'none';
+      noBox.style.display = 'block';
+    } else {
+      noBox.style.display = 'none';
+      tableWrap.style.display = 'block';
+      patterns.forEach(p => {
+        const tr = document.createElement('tr');
+        const name = (p.pattern_type || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        const dir = (p.trend_direction || '').toUpperCase();
+        const pConf = p.confidence_score != null ? Number(p.confidence_score).toFixed(1) + '%' : '—';
+        const breakout = p.breakout_level != null ? '$' + Number(p.breakout_level).toFixed(2) : '—';
+        const volConf = p.volume_confirmed;
+        const volText = volConf === true ? '✓ Yes' : volConf === false ? '✗ No' : '—';
+        const volClass = volConf === true ? 'vol-yes' : 'vol-no';
+        const dirClass = dir === 'BULLISH' ? 'dir-bullish' : dir === 'BEARISH' ? 'dir-bearish' : '';
+        tr.innerHTML = `
+          <td>${name}</td>
+          <td class="${dirClass}">${dir || '—'}</td>
+          <td>${pConf}</td>
+          <td>${breakout}</td>
+          <td class="${volClass}">${volText}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Show results and scroll
+    const resultsEl = document.getElementById('results');
+    resultsEl.classList.add('visible');
+    setTimeout(() => {
+      resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 80);
+  }
+
+  // ── Download report ────────────────────────────────────────────────────────
+  async function downloadReport(format) {
+    if (!currentSessionId) { showError('No active session. Upload a CSV first.'); return; }
+    try {
+      let res, filename;
+      if (format === 'pdf') {
+        res = await fetch(`${API}/api/v1/get_pdf_report`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: currentSessionId }),
+        });
+        filename = `StockPatternReport_${Date.now()}.pdf`;
+      } else {
+        res = await fetch(`${API}/api/v1/get_report`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: currentSessionId, format }),
+        });
+        const cd = res.headers.get('content-disposition') || '';
+        const match = cd.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        filename = match ? match[1].replace(/['"]/g, '') : `pattern_report_${currentSessionId}.${format}`;
+      }
+      if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Download failed'); }
+      const blob = await res.blob();
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    } catch(err) {
+      showError('Report download failed: ' + err.message);
+    }
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function showLoading(visible) {
+    const el = document.getElementById('loading');
+    el.classList.toggle('visible', visible);
+  }
+
+  function showError(msg) {
+    const banner = document.getElementById('errorBanner');
+    document.getElementById('errorMessage').textContent = msg;
+    banner.classList.add('visible');
+  }
+
+  function hideError() {
+    document.getElementById('errorBanner').classList.remove('visible');
+  }
+</script>
+</body>
+</html>

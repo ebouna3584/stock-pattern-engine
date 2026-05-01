@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: stock-pattern-engine
+Version: 0.1.0
+Summary: Stock pattern engine for trading analysis
+Requires-Python: >=3.11
+Requires-Dist: fastapi>=0.100.0
+Requires-Dist: uvicorn>=0.23.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: openpyxl>=3.1.0

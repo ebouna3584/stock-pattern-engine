@@ -1,0 +1,20 @@
+[project]
+name = "stock-pattern-engine"
+version = "0.1.0"
+description = "Stock pattern engine for trading analysis"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "openpyxl>=3.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*", "core*", "models*", "patterns*", "recommendations*", "reports*", "risk*", "templates*", "tests*", "utils*", "analysis*"]
