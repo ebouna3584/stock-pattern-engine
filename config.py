@@ -1,8 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
-from vscode.gliovex_opt import app
-
 
 class Settings(BaseSettings):
     APP_NAME: str = "Stock Pattern Engine"
@@ -46,11 +44,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-@app.get("/debug-imports")
-def debug():
-    import sys
-    return {
-        "python": sys.version,
-        "path": sys.path,
-    }
