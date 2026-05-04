@@ -27,7 +27,7 @@ from core.preprocessor import (
 from patterns.base import PatternRegistry
 from risk.scorer import compute_risk
 from recommendations.trade_planner import build_trade_recommendation
-from config import settings
+from stock_pattern_engine.api.config import settings
 
 # Import all detector modules to trigger @PatternRegistry.register decorators
 import patterns.continuation.triangles    # noqa: F401

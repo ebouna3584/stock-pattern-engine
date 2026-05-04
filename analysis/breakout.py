@@ -6,7 +6,7 @@ Determines whether price has or is about to break out of a detected pattern.
 import numpy as np
 import pandas as pd
 from typing import Optional, Tuple
-from config import settings
+from stock_pattern_engine.api.config import settings
 
 
 def breakout_confirmation(

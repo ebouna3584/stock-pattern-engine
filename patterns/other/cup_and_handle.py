@@ -21,7 +21,7 @@ from analysis.regression import (
 )
 from analysis.breakout import breakout_confirmation
 from analysis.indicators import volume_surge_factor
-from config import settings
+from stock_pattern_engine.api.config import settings
 
 
 CUP_MIN_CANDLES = 30

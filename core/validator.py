@@ -11,7 +11,7 @@ import numpy as np
 from typing import Tuple
 from models.schemas import ValidationResult
 from models.enums import ValidationStatus
-from config import settings
+from stock_pattern_engine.api.config import settings
 
 
 # Required columns every valid CSV must contain

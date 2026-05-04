@@ -22,7 +22,7 @@ from models.schemas import PatternResult, RiskAssessment
 from models.enums import RiskLevel, HoldingTime
 from analysis.indicators import rsi_risk_factor, atr_volatility_score, volume_surge_factor
 from analysis.breakout import false_breakout_probability
-from config import settings
+from stock_pattern_engine.api.config import settings
 
 
 def compute_risk(
