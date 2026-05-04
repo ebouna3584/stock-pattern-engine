@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Now import and run uvicorn
 import uvicorn
-from main import app
+from stock_pattern_engine.api.main import app
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8007, reload=True)
