@@ -14,7 +14,7 @@ import io
 from datetime import datetime
 from typing import Optional
 from models.schemas import AnalysisResponse
-from stock_pattern_engine.api.config import settings
+from api.config import settings
 
 
 def to_json(response: AnalysisResponse, indent: int = 2) -> str:

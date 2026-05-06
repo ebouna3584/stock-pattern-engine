@@ -16,7 +16,7 @@ from models.enums import PatternType, TrendDirection
 from analysis.regression import build_trendline, detect_pivot_highs, detect_pivot_lows
 from analysis.breakout import breakout_confirmation
 from analysis.indicators import volume_surge_factor
-from stock_pattern_engine.api.config import settings
+from api.config import settings
 
 
 FLAT_SLOPE_TOL = 0.008   # Max slope magnitude for a "flat" trendline

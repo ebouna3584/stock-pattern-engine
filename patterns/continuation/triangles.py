@@ -20,7 +20,7 @@ from analysis.breakout import (
     breakout_confirmation, false_breakout_probability, estimate_breakout_target
 )
 from analysis.indicators import volume_surge_factor
-from stock_pattern_engine.api.config import settings
+from api.config import settings
 
 
 class TriangleDetectorBase(BasePatternDetector):

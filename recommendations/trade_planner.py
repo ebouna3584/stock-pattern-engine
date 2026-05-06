@@ -14,7 +14,7 @@ from typing import Optional
 from models.schemas import PatternResult, RiskAssessment, TradeRecommendation
 from models.enums import TradeSignal, RiskLevel
 from analysis.breakout import estimate_breakout_target
-from stock_pattern_engine.api.config import settings
+from api.config import settings
 
 
 # Confidence gates: only issue BUY/SELL if confidence exceeds these thresholds
