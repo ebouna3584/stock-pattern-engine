@@ -833,6 +833,89 @@
       text-decoration: underline;
     }
 
+    /* ── Quick Analyze Panel ── */
+    .qa-panel {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      margin: 2rem 0 1.5rem;
+    }
+    .qa-panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+    .qa-panel-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+    .qa-form {
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .qa-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .qa-field label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .qa-input {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 0.55rem 0.85rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .qa-input:focus { border-color: var(--blue); }
+    .qa-ticker { width: 110px; text-transform: uppercase; font-family: var(--font-mono); font-weight: 600; }
+    .qa-date   { width: 155px; color-scheme: dark; }
+    .qa-actions { display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
+    .qa-refresh-bar {
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.85rem;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .qa-refresh-bar.visible { display: flex; }
+    .qa-refresh-bar span { color: var(--blue); font-weight: 600; font-family: var(--font-mono); }
+    .advanced-section {
+      margin-top: 2.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+    .advanced-toggle {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0;
+      margin-bottom: 1.25rem;
+    }
+    .advanced-toggle:hover { color: var(--dim); }
+
     /* Workflow steps (manual) */
     .manual-workflow {
       display: grid;
@@ -1098,6 +1181,76 @@
       margin-bottom: 1.5rem;
     }
     .download-label { color: var(--muted); font-size: 13px; font-weight: 500; }
+
+    /* ── Learn Page ── */
+    #page-learn { padding-bottom: 4rem; }
+    .learn-header { padding: 2.5rem 0 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+    .learn-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 0.5rem; }
+    .learn-subtitle { font-size: 13px; color: var(--muted); max-width: 680px; line-height: 1.6; }
+    .learn-tabs { display: flex; gap: 0.35rem; flex-wrap: wrap; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+    .learn-tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: inherit; font-size: 13px; font-weight: 500; padding: 0.6rem 1rem; cursor: pointer; transition: all 0.15s; margin-bottom: -1px; }
+    .learn-tab:hover { color: var(--dim); }
+    .learn-tab.active { color: var(--text); font-weight: 600; border-bottom-color: var(--blue); }
+    .learn-panel { display: none; }
+    .learn-panel.active { display: block; }
+    .learn-section-intro { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    /* Accordion */
+    .acc-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden; }
+    .acc-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; cursor: pointer; transition: background 0.15s; gap: 1rem; }
+    .acc-header:hover { background: rgba(255,255,255,0.02); }
+    .acc-header-left { display: flex; align-items: center; gap: 0.75rem; }
+    .acc-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; letter-spacing: 0.04em; }
+    .badge-bullish { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    .badge-bearish { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+    .badge-neutral { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+    .badge-reversal { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    .acc-title { font-size: 14px; font-weight: 600; color: var(--text); }
+    .acc-summary { font-size: 12px; color: var(--muted); max-width: 60ch; }
+    .acc-chevron { color: var(--muted); font-size: 11px; flex-shrink: 0; transition: transform 0.2s; }
+    .acc-card.open .acc-chevron { transform: rotate(180deg); }
+    .acc-body { display: none; padding: 0 1.25rem 1.25rem; }
+    .acc-card.open .acc-body { display: block; }
+    .acc-body-inner { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .acc-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .acc-detail-item { background: var(--bg3); border-radius: 8px; padding: 0.85rem 1rem; }
+    .acc-detail-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+    .acc-detail-text { font-size: 12.5px; color: var(--dim); line-height: 1.55; }
+    .acc-key-levels { font-size: 12px; color: var(--dim); line-height: 1.7; }
+    .acc-key-levels strong { color: var(--text); }
+    /* Market event cards */
+    .event-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .event-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+    .event-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+    .event-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 0.75rem; }
+    .event-sectors { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .sector-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 99px; }
+    .sector-up { background: rgba(16,185,129,0.15); color: var(--green); }
+    .sector-down { background: rgba(239,68,68,0.15); color: var(--red); }
+    /* Tip cards */
+    .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; }
+    .tip-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; display: flex; gap: 1rem; }
+    .tip-num { font-size: 1.5rem; font-weight: 800; color: var(--blue); opacity: 0.4; flex-shrink: 0; line-height: 1; }
+    .tip-text { font-size: 12.5px; color: var(--dim); line-height: 1.65; }
+    .tip-text strong { color: var(--text); }
+    /* Indicator cards */
+    .ind-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
+    .ind-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; }
+    .ind-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .ind-what { font-size: 11px; color: var(--muted); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .ind-body { font-size: 12.5px; color: var(--dim); line-height: 1.65; }
+    .ind-levels { display: flex; flex-direction: column; gap: 0.35rem; margin-top: 0.75rem; }
+    .ind-level { display: flex; align-items: baseline; gap: 0.5rem; font-size: 11.5px; }
+    .ind-level-label { font-weight: 700; min-width: 60px; }
+    .green { color: var(--green); }
+    .red { color: var(--red); }
+    .amber { color: var(--amber); }
+    /* Trade plan table */
+    .tradeplan-grid { display: flex; flex-direction: column; gap: 1rem; }
+    .tp-row { display: grid; grid-template-columns: 220px 1fr; gap: 1.5rem; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; align-items: start; }
+    .tp-label { font-size: 13px; font-weight: 700; color: var(--text); }
+    .tp-sublabel { font-size: 10px; color: var(--muted); margin-top: 0.15rem; text-transform: uppercase; letter-spacing: 0.04em; }
+    .tp-desc { font-size: 12.5px; color: var(--dim); line-height: 1.65; }
+    .tp-desc strong { color: var(--text); }
   </style>
 </head>
 <body>
@@ -1114,6 +1267,7 @@
     <button class="nav-link active" onclick="navigate('home')" id="nav-home">Home</button>
     <button class="nav-link" onclick="navigate('screener')" id="nav-screener">Live Screener</button>
     <button class="nav-link" onclick="navigate('manual')" id="nav-manual">Manual Analysis</button>
+    <button class="nav-link" onclick="navigate('learn')" id="nav-learn">Learn</button>
   </div>
 
   <div class="navbar-right">
@@ -1302,56 +1456,89 @@
 
     <div class="manual-header">
       <h1 class="manual-title">Manual Analysis</h1>
-      <div class="manual-warning">⚠ This analysis is not automated. Upload a CSV file to run a one-time pattern analysis.</div>
       <p class="manual-info">
-        For automated live analysis, use the <a onclick="navigate('screener')">Live Screener</a>. The live screener connects to Yahoo Finance and refreshes every 5 minutes during market hours.
+        Enter a ticker and the date you bought (or want to analyze from). Data is fetched automatically from Yahoo Finance — no spreadsheet needed. For automated live tracking, use the <a onclick="navigate('screener')">Live Screener</a>.
       </p>
     </div>
 
-    <div class="manual-workflow">
-
-      <!-- Step 1 -->
-      <div class="manual-step-card">
-        <span class="step-number">1</span>
-        <div class="manual-step-title">Download Template</div>
-        <div class="manual-step-desc">
-          Get the standardised CSV template with pre-filled example data for AAPL, TSLA, and NVDA. All required columns are included with correct formatting.
+    <!-- ── Quick Analyze Panel ── -->
+    <div class="qa-panel">
+      <div class="qa-panel-title">Quick Analyze</div>
+      <div class="qa-panel-sub">Enter a ticker and start date — all price data is fetched automatically. Results refresh every 10 minutes.</div>
+      <div class="qa-form">
+        <div class="qa-field">
+          <label for="qa-ticker">Ticker</label>
+          <input id="qa-ticker" class="qa-input qa-ticker" type="text" placeholder="AAPL" maxlength="10" oninput="this.value=this.value.toUpperCase()" />
         </div>
-        <button class="btn btn-primary btn-sm" onclick="downloadTemplate()">⬇ Download Template</button>
-      </div>
-
-      <!-- Step 2 -->
-      <div class="manual-step-card">
-        <span class="step-number">2</span>
-        <div class="manual-step-title">Fill &amp; Export as CSV</div>
-        <div class="manual-step-desc">
-          Replace example rows with your own OHLCV data. Keep the header row intact. Export as:<br /><br />
-          <strong>File → Save As → CSV UTF-8 (Comma delimited)</strong><br /><br />
-          Minimum 20 rows required. 50+ rows recommended for best results.
+        <div class="qa-field">
+          <label for="qa-buyDate">From (buy date)</label>
+          <input id="qa-buyDate" class="qa-input qa-date" type="date" />
         </div>
-      </div>
-
-      <!-- Step 3 -->
-      <div class="manual-step-card">
-        <span class="step-number">3</span>
-        <div class="manual-step-title">Upload &amp; Analyze</div>
-        <div class="manual-step-desc">Drop your CSV below, then click Analyze to run the full pattern engine.</div>
-        <div class="drop-zone" id="m-dropZone"
-             ondragover="event.preventDefault(); this.classList.add('dragging')"
-             ondragleave="this.classList.remove('dragging')"
-             ondrop="handleFileDrop(event)">
-          <input type="file" id="m-fileInput" accept=".csv" onchange="handleFileSelect(event)" />
-          <div class="drop-zone-icon">📂</div>
-          <div class="drop-zone-text">Drag &amp; drop CSV here, or click to browse</div>
-          <div class="drop-zone-filename" id="m-fileNameDisplay"></div>
+        <div class="qa-field">
+          <label for="qa-endDate">To (optional override)</label>
+          <input id="qa-endDate" class="qa-input qa-date" type="date" placeholder="Today" />
         </div>
-        <div class="upload-status" id="m-uploadStatus"></div>
-        <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
-          <button class="btn btn-outline btn-sm" id="m-uploadBtn" onclick="uploadFile()" disabled>⬆ Upload</button>
-          <button class="btn btn-success btn-sm" id="m-analyzeBtn" onclick="uploadAndAnalyze()" disabled>🔍 Analyze</button>
+        <div class="qa-actions">
+          <button class="btn btn-primary btn-sm" onclick="runQuickAnalyze()">🔍 Quick Analyze</button>
+          <button class="btn btn-outline btn-sm" onclick="downloadPrefilledExcel()">⬇ Pre-filled Excel</button>
         </div>
       </div>
+      <div class="qa-refresh-bar" id="qa-refresh-bar">
+        Auto-refreshing every 10 min &nbsp;·&nbsp; Next refresh in <span id="qa-countdown">10:00</span>
+        &nbsp;·&nbsp; <button class="btn btn-ghost btn-sm" onclick="runQuickAnalyze()" style="padding:2px 10px;font-size:11px;">Refresh Now</button>
+      </div>
+    </div>
 
+    <!-- ── Advanced: Custom CSV Upload ── -->
+    <div class="advanced-section">
+      <button class="advanced-toggle" id="advanced-toggle-btn" onclick="toggleAdvanced()">▶ Advanced: Upload Custom CSV</button>
+      <div id="advanced-workflow" style="display:none;">
+        <div class="manual-workflow">
+
+          <!-- Step 1 -->
+          <div class="manual-step-card">
+            <span class="step-number">1</span>
+            <div class="manual-step-title">Get Template</div>
+            <div class="manual-step-desc">
+              Download a blank template, or use <strong>Pre-filled Excel</strong> above to get a template auto-filled with real data for your ticker.
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="downloadTemplate()">⬇ Blank Template</button>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="manual-step-card">
+            <span class="step-number">2</span>
+            <div class="manual-step-title">Fill &amp; Export as CSV</div>
+            <div class="manual-step-desc">
+              Edit the file if needed, then export as:<br /><br />
+              <strong>File → Save As → CSV UTF-8 (Comma delimited)</strong><br /><br />
+              Minimum 20 rows required. 50+ rows recommended.
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="manual-step-card">
+            <span class="step-number">3</span>
+            <div class="manual-step-title">Upload &amp; Analyze</div>
+            <div class="manual-step-desc">Drop your CSV below, then click Analyze to run the full pattern engine.</div>
+            <div class="drop-zone" id="m-dropZone"
+                 ondragover="event.preventDefault(); this.classList.add('dragging')"
+                 ondragleave="this.classList.remove('dragging')"
+                 ondrop="handleFileDrop(event)">
+              <input type="file" id="m-fileInput" accept=".csv" onchange="handleFileSelect(event)" />
+              <div class="drop-zone-icon">📂</div>
+              <div class="drop-zone-text">Drag &amp; drop CSV here, or click to browse</div>
+              <div class="drop-zone-filename" id="m-fileNameDisplay"></div>
+            </div>
+            <div class="upload-status" id="m-uploadStatus"></div>
+            <div style="display:flex;gap:0.75rem;margin-top:0.5rem;">
+              <button class="btn btn-outline btn-sm" id="m-uploadBtn" onclick="uploadFile()" disabled>⬆ Upload</button>
+              <button class="btn btn-success btn-sm" id="m-analyzeBtn" onclick="uploadAndAnalyze()" disabled>🔍 Analyze</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
     <!-- Error banner -->
@@ -1453,6 +1640,880 @@
         <button class="btn btn-outline btn-sm" onclick="downloadReport('pdf')">⬇ PDF Report</button>
       </div>
     </section>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ PAGE: LEARN ═══════════════════════════════════════ -->
+<div id="page-learn" class="page">
+  <div class="container">
+
+    <div class="learn-header">
+      <div class="learn-title">Investor Education Center</div>
+      <p class="learn-subtitle">A beginner-friendly but detailed crash course on chart patterns, technical indicators, trade plans, and how global events move markets. Use this as your reference guide.</p>
+    </div>
+
+    <!-- Tab buttons -->
+    <div class="learn-tabs">
+      <button class="learn-tab active" onclick="learnTab(this,'lt-patterns')">Pattern Library</button>
+      <button class="learn-tab" onclick="learnTab(this,'lt-indicators')">Indicators</button>
+      <button class="learn-tab" onclick="learnTab(this,'lt-tradeplan')">Trade Plan Decoded</button>
+      <button class="learn-tab" onclick="learnTab(this,'lt-markets')">Markets &amp; Events</button>
+      <button class="learn-tab" onclick="learnTab(this,'lt-tips')">Tips &amp; Principles</button>
+    </div>
+
+    <!-- ── Tab 1: Pattern Library ── -->
+    <div id="lt-patterns" class="learn-panel active">
+      <p class="learn-section-intro">Click any pattern to expand full details. Understanding these structures helps you interpret why the engine fires a signal — and what to expect next.</p>
+
+      <!-- Ascending Triangle -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bullish">BULLISH</span>
+            <div>
+              <div class="acc-title">Ascending Triangle</div>
+              <div class="acc-summary">Flat resistance + rising support — breakout expected above resistance</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bullish Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Breakout Direction</div>
+                <div class="acc-detail-text">Above flat resistance line</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Price repeatedly tests the same resistance level while each pullback low is higher than the last. Two converging trendlines form a triangle pointing right.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Add the height of the triangle (from the first swing low to the resistance line) to the breakout point to get the price target.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> Buyers are getting more aggressive each dip (rising lows), but sellers keep defending the same resistance. Eventually buyers win and price bursts through. This is one of the most reliable continuation patterns.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Descending Triangle -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bearish">BEARISH</span>
+            <div>
+              <div class="acc-title">Descending Triangle</div>
+              <div class="acc-summary">Flat support + falling resistance — breakdown expected below support</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bearish Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Breakout Direction</div>
+                <div class="acc-detail-text">Below flat support line</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Price keeps hitting the same support level while each rally high is lower than the last. Sellers are in control, buyers are weakening.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Subtract the triangle height from the breakdown point for the downside target.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> The mirror image of the ascending triangle. Each rally is weaker than the last — sellers are dominant. When buyers finally give up, price falls sharply below support.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Symmetrical Triangle -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-neutral">NEUTRAL</span>
+            <div>
+              <div class="acc-title">Symmetrical Triangle</div>
+              <div class="acc-summary">Both lines converge — breakout follows prior trend direction</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Neutral Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Breakout Direction</div>
+                <div class="acc-detail-text">Follows prior macro trend</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Lower highs and higher lows forming a coiling pattern toward an apex. Buyers and sellers are equally matched — a compression before expansion.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Same as other triangles — project the widest part of the triangle from the breakout point.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> Neither buyers nor sellers are winning. The standoff ends with a breakout — usually in the direction the stock was already moving before the triangle formed. Never trade against the prior trend on this pattern.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bull Flag -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bullish">BULLISH</span>
+            <div>
+              <div class="acc-title">Bull Flag</div>
+              <div class="acc-summary">Sharp pole up + small rectangular consolidation — continuation expected</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bullish Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Breakout Direction</div>
+                <div class="acc-detail-text">Above the flag's upper boundary</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">A fast, sharp upward move (the pole) followed by a mild downward or sideways consolidation forming a small parallel channel (the flag). Volume dries up during the flag.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Add the pole height to the breakout point from the flag's upper trendline.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> The pole represents strong momentum. The flag is a brief rest — traders taking profits — before the next leg up. Volume contracting during the flag and surging on breakout is the confirmation you want.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bear Flag -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bearish">BEARISH</span>
+            <div>
+              <div class="acc-title">Bear Flag</div>
+              <div class="acc-summary">Sharp pole down + small consolidation upward — continuation expected downward</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bearish Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Breakout Direction</div>
+                <div class="acc-detail-text">Below the flag's lower boundary</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">A sharp decline (the pole) followed by a mild upward consolidation. Sellers are resting before resuming the downtrend.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Subtract the pole height from the breakdown point below the flag's lower boundary.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> The upward consolidation is a "dead cat bounce" against the dominant downtrend. When the flag breaks down, the selling resumes with force.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pennant -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bullish">CONTINUATION</span>
+            <div>
+              <div class="acc-title">Pennant</div>
+              <div class="acc-summary">Like a flag but consolidation forms a small symmetrical triangle</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bullish or Bearish Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Key Difference From Flag</div>
+                <div class="acc-detail-text">The consolidation phase narrows into converging trendlines (a mini symmetrical triangle) rather than a parallel channel.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Strong pole move + small converging triangle consolidation. Volume contracts during the pennant, then expands sharply on breakout.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Same as flag — project the pole height from the breakout point of the pennant.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> Very similar psychology to a flag — brief consolidation after a strong move. The tighter, converging structure (vs. a channel) makes the breakout slightly more explosive statistically.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Head & Shoulders -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-reversal">REVERSAL</span>
+            <div>
+              <div class="acc-title">Head &amp; Shoulders</div>
+              <div class="acc-summary">3 peaks (left shoulder &lt; head &gt; right shoulder) — sell on neckline break</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bearish Reversal</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Confirmation</div>
+                <div class="acc-detail-text">Close below the neckline (the line connecting the two troughs between the shoulders)</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Three peaks: the middle peak (head) is the highest, the two side peaks (shoulders) are lower and roughly equal in height. Forms after a sustained uptrend.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Subtract the distance from the head to the neckline from the neckline breakout point.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> The pattern shows three attempts to push higher — only the second succeeds (the head). The third attempt (right shoulder) fails at a lower level, signaling buyers are exhausted. The neckline break is the entry trigger.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inverse Head & Shoulders -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bullish">REVERSAL</span>
+            <div>
+              <div class="acc-title">Inverse Head &amp; Shoulders</div>
+              <div class="acc-summary">3 troughs — buy on neckline break, most reliable reversal pattern</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bullish Reversal (Most Reliable)</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Confirmation</div>
+                <div class="acc-detail-text">Close above the neckline with strong volume</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Three troughs: the middle trough (head) is the lowest, the two outer troughs (shoulders) are higher. Forms after a sustained downtrend.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Add the distance from the head to the neckline to the neckline breakout point.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> Considered the single most reliable bullish reversal pattern in technical analysis. Three attempts by sellers to push lower — only the middle one succeeds. When the neckline breaks with volume, it typically signals a sustained upward move.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Double Top / Double Bottom -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-reversal">REVERSAL</span>
+            <div>
+              <div class="acc-title">Double Top / Double Bottom</div>
+              <div class="acc-summary">2 equal highs = bearish reversal; 2 equal lows = bullish reversal</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Double Top</div>
+                <div class="acc-detail-text">Bearish reversal. Two nearly equal highs (within ~3%) with a valley between them. Confirms on a close below the valley low.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Double Bottom</div>
+                <div class="acc-detail-text">Bullish reversal. Two nearly equal lows with a peak between them. Confirms on a close above the peak.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Volume Pattern</div>
+                <div class="acc-detail-text">Volume should be higher on the first peak/trough than the second. Declining volume on the second test shows conviction is fading.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">The distance between the peaks and the valley, projected from the breakout level.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> The second test of a high or low is the key — if buyers (or sellers) can't push through the same level twice, the trend is likely over. The confirmation break of the valley/peak is the entry trigger.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cup & Handle -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-bullish">BULLISH</span>
+            <div>
+              <div class="acc-title">Cup &amp; Handle</div>
+              <div class="acc-summary">U-shaped rounded base + small pullback handle — breakout above rim</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Bullish Continuation</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Formation Time</div>
+                <div class="acc-detail-text">Usually 7 weeks to 65 weeks. Longer cups tend to produce more powerful breakouts.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">A rounded, U-shaped decline and recovery (the cup) followed by a short sideways-to-down consolidation (the handle). The handle should not retrace more than 50% of the cup.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Add the depth of the cup to the breakout point (rim level). This gives the price target.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> The cup shows a long accumulation phase — institutional investors quietly building positions. The handle is a final shakeout of weak holders. The breakout above the rim (prior high) is the entry point. Popularized by William O'Neil's CAN SLIM system.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rising Wedge / Falling Wedge -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-reversal">REVERSAL</span>
+            <div>
+              <div class="acc-title">Rising Wedge / Falling Wedge</div>
+              <div class="acc-summary">Rising = bearish reversal; Falling = bullish reversal</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Rising Wedge (Bearish)</div>
+                <div class="acc-detail-text">Both support and resistance lines slope upward but converge. Despite rising price, momentum is fading. Breakout expected downward below support.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Falling Wedge (Bullish)</div>
+                <div class="acc-detail-text">Both lines slope downward but converge. Despite falling price, selling pressure is weakening. Breakout expected upward above resistance.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Key Distinction</div>
+                <div class="acc-detail-text">The convergence is what matters. As the wedge narrows, energy builds for a sharp move in the opposite direction of the wedge slope.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Counter-intuitive</div>
+                <div class="acc-detail-text">A rising wedge is bearish despite price going up. A falling wedge is bullish despite price going down. Always trade the breakout direction, not the wedge direction.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> Wedges are counter-intuitive — the slope of the wedge is the opposite direction of the expected breakout. Watch for RSI divergence (not confirming the price move) as an extra warning sign.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rectangle / Channel -->
+      <div class="acc-card">
+        <div class="acc-header" onclick="accToggle(this)">
+          <div class="acc-header-left">
+            <span class="acc-badge badge-neutral">NEUTRAL</span>
+            <div>
+              <div class="acc-title">Rectangle / Channel</div>
+              <div class="acc-summary">Price bouncing between flat support and resistance — breakout in trend direction</div>
+            </div>
+          </div>
+          <span class="acc-chevron">▼</span>
+        </div>
+        <div class="acc-body">
+          <div class="acc-body-inner">
+            <div class="acc-detail-grid">
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Pattern Type</div>
+                <div class="acc-detail-text">Consolidation / Neutral</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Breakout Direction</div>
+                <div class="acc-detail-text">Typically in the direction of the prior trend</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">What to Look For</div>
+                <div class="acc-detail-text">Price oscillating between two flat (horizontal) lines — a ceiling (resistance) and a floor (support). At least 2–3 touches of each level.</div>
+              </div>
+              <div class="acc-detail-item">
+                <div class="acc-detail-label">Measured Move</div>
+                <div class="acc-detail-text">Project the height of the rectangle (distance between support and resistance) from the breakout point.</div>
+              </div>
+            </div>
+            <div class="acc-key-levels"><strong>Key signal:</strong> A rectangle is a patience pattern — the market is undecided. You can trade bounces within the range or wait for the breakout. The longer the rectangle, the more powerful the eventual breakout tends to be.</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end lt-patterns -->
+
+    <!-- ── Tab 2: Indicators ── -->
+    <div id="lt-indicators" class="learn-panel">
+      <p class="learn-section-intro">Technical indicators are mathematical calculations based on price and volume that help confirm patterns, measure momentum, and identify overbought/oversold conditions.</p>
+
+      <div class="ind-grid">
+
+        <div class="ind-card">
+          <div class="ind-name">RSI — Relative Strength Index</div>
+          <div class="ind-what">Momentum oscillator (0–100)</div>
+          <div class="ind-body">Measures the speed and magnitude of recent price changes. Calculated over 14 periods by default. Ranges from 0 to 100.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label red">&gt;70</span><span>Overbought — potential sell signal. Doesn't mean sell immediately, but caution is warranted on new longs.</span></div>
+            <div class="ind-level"><span class="ind-level-label amber">50–70</span><span>Bullish territory — momentum is with the bulls.</span></div>
+            <div class="ind-level"><span class="ind-level-label amber">30–50</span><span>Bearish territory — momentum is with the bears.</span></div>
+            <div class="ind-level"><span class="ind-level-label green">&lt;30</span><span>Oversold — potential buy signal. Look for a turn upward as confirmation.</span></div>
+            <div class="ind-level"><span class="ind-level-label" style="color:var(--blue);min-width:60px">Divergence</span><span>Price makes a new high but RSI doesn't = bearish divergence (warning signal). Price makes a new low but RSI doesn't = bullish divergence.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">MACD — Moving Average Convergence Divergence</div>
+          <div class="ind-what">Trend + momentum indicator</div>
+          <div class="ind-body">MACD Line = EMA(12) minus EMA(26). Signal Line = 9-period EMA of MACD. Histogram = MACD minus Signal.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label green">Bullish</span><span>MACD crosses above Signal Line — momentum shifting upward.</span></div>
+            <div class="ind-level"><span class="ind-level-label red">Bearish</span><span>MACD crosses below Signal Line — momentum shifting downward.</span></div>
+            <div class="ind-level"><span class="ind-level-label amber">Histogram</span><span>Growing histogram bars = strengthening momentum. Shrinking = momentum fading, potential reversal ahead.</span></div>
+            <div class="ind-level"><span class="ind-level-label" style="color:var(--blue);min-width:60px">Zero Line</span><span>MACD crossing above zero = bullish trend change. Below zero = bearish trend change.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">ATR — Average True Range</div>
+          <div class="ind-what">Volatility measure in dollar terms</div>
+          <div class="ind-body">Measures the average price range per bar (14 periods). Unlike RSI or MACD, ATR is not directional — it only measures how much a stock moves, not which direction.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label red">High ATR</span><span>More volatile — wider stop losses needed. Use smaller position sizes to keep dollar risk constant.</span></div>
+            <div class="ind-level"><span class="ind-level-label green">Low ATR</span><span>Quieter stock — tighter stops acceptable. Good for defined-risk setups.</span></div>
+            <div class="ind-level"><span class="ind-level-label" style="color:var(--blue);min-width:60px">Stop Loss</span><span>This app sets stop loss at 1.5× ATR below entry. ATR-based stops adapt to each stock's specific volatility.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">Bollinger Bands</div>
+          <div class="ind-what">Price vs. statistical range (20-SMA ± 2 std dev)</div>
+          <div class="ind-body">Three bands: middle band = 20-period SMA. Upper/lower bands = 2 standard deviations above/below. About 95% of price action occurs inside the bands.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label red">Upper Band</span><span>Price touching or exceeding = potentially overbought. Not a sell signal alone — price can "walk the band" in strong trends.</span></div>
+            <div class="ind-level"><span class="ind-level-label green">Lower Band</span><span>Price at or below = potentially oversold. Look for a bounce confirmation before buying.</span></div>
+            <div class="ind-level"><span class="ind-level-label amber">Squeeze</span><span>Bands narrowing = volatility contraction. Historically precedes a big move. Direction unknown — watch for the breakout.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">EMA-20 / EMA-50</div>
+          <div class="ind-what">Exponential moving averages — short/medium trend</div>
+          <div class="ind-body">Exponential moving averages give more weight to recent prices. EMA-20 tracks short-term trend; EMA-50 tracks medium-term trend.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label green">Above Both</span><span>Short-term and medium-term trends are bullish — favorable conditions for longs.</span></div>
+            <div class="ind-level"><span class="ind-level-label red">Below Both</span><span>Downtrend confirmed — avoid longs, look for short setups.</span></div>
+            <div class="ind-level"><span class="ind-level-label green">Golden Cross</span><span>EMA-20 crosses above EMA-50 — bullish signal indicating a potential trend change upward.</span></div>
+            <div class="ind-level"><span class="ind-level-label red">Death Cross</span><span>EMA-20 crosses below EMA-50 — bearish signal indicating downtrend is strengthening.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">SMA-200</div>
+          <div class="ind-what">200-day simple moving average — long-term trend</div>
+          <div class="ind-body">The single most watched indicator by institutional investors worldwide. Represents approximately one full year of trading data. Price relationship to this line defines the macro trend.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label green">Above SMA-200</span><span>Long-term bull market territory. Most institutional buying happens here.</span></div>
+            <div class="ind-level"><span class="ind-level-label red">Below SMA-200</span><span>Heightened risk. Even good technical setups have lower success rates below the 200-day.</span></div>
+            <div class="ind-level"><span class="ind-level-label amber">Testing SMA-200</span><span>A major support or resistance zone — watch for a decisive bounce or breakdown with volume.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">Volume</div>
+          <div class="ind-what">Conviction behind price moves</div>
+          <div class="ind-body">Volume tells you how many shares (or contracts) changed hands. It's the most honest indicator — it shows what participants are actually doing with real money.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label green">Rising Price + Rising Volume</span><span>Strong trend — institutional participation. High conviction.</span></div>
+            <div class="ind-level"><span class="ind-level-label red">Rising Price + Falling Volume</span><span>Weakening trend — potential reversal ahead. Fewer participants buying.</span></div>
+            <div class="ind-level"><span class="ind-level-label green">Breakout + Volume Spike</span><span>Volume 2–3× average on breakout = institutional participation. High confidence in the move.</span></div>
+          </div>
+        </div>
+
+        <div class="ind-card">
+          <div class="ind-name">Confidence Score (0–100)</div>
+          <div class="ind-what">This app's proprietary pattern quality score</div>
+          <div class="ind-body">A composite score combining trendline R² quality, volume confirmation, RSI/MACD indicator alignment, and how cleanly the price action fits the geometric pattern.</div>
+          <div class="ind-levels">
+            <div class="ind-level"><span class="ind-level-label green">70–100</span><span>Strong pattern geometry — high-conviction setup. Multiple factors aligned.</span></div>
+            <div class="ind-level"><span class="ind-level-label amber">50–69</span><span>Moderate confidence — pattern is valid but some conditions are borderline.</span></div>
+            <div class="ind-level"><span class="ind-level-label red">Below 50</span><span>Low conviction — treat as speculative. Consider waiting for more confirmation or skip the trade.</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end lt-indicators -->
+
+    <!-- ── Tab 3: Trade Plan Decoded ── -->
+    <div id="lt-tradeplan" class="learn-panel">
+      <p class="learn-section-intro">Every trade plan generated by this app contains these fields. Here's exactly what each one means and why it's calculated the way it is.</p>
+
+      <div class="tradeplan-grid">
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Entry Price</div>
+            <div class="tp-sublabel">Where to enter the trade</div>
+          </div>
+          <div class="tp-desc">The recommended price to enter the trade. Based on the <strong>breakout level</strong> — you enter when price actually breaks through the pattern boundary, not before. Entering before the breakout is called "anticipating" — it might work occasionally but leads to many false entries. The breakout level is calculated from the trendlines of the detected pattern.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Stop Loss</div>
+            <div class="tp-sublabel">Where to exit if wrong</div>
+          </div>
+          <div class="tp-desc">The price where you admit the trade failed and exit. Calculated as <strong>1.5× ATR below the entry price</strong> (for long trades). ATR-based stops adapt to each stock's specific volatility — wider for volatile stocks, tighter for quiet ones. This prevents getting stopped out by normal price fluctuations while still limiting losses if the trade genuinely fails. <em>Never move your stop loss further away from entry once in a trade.</em></div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Take Profit 1 (TP-1)</div>
+            <div class="tp-sublabel">Conservative first target</div>
+          </div>
+          <div class="tp-desc">The first, conservative profit target — approximately <strong>1× ATR above the entry price</strong>. When TP-1 is reached, the recommended strategy is to take 30–40% of your position off. This locks in real gains and reduces emotional pressure on the remaining position. The remaining shares continue riding toward TP-2 and TP-3.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Take Profit 2 (TP-2)</div>
+            <div class="tp-sublabel">Measured move target</div>
+          </div>
+          <div class="tp-desc">The <strong>measured move target</strong> — based on the pattern height projected from the breakout point. This is the classic technical analysis target derived from the pattern geometry. For example, if an ascending triangle is 5 points tall and breaks out at $100, TP-2 would be approximately $105. Take another 30–40% of the original position here.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Take Profit 3 (TP-3)</div>
+            <div class="tp-sublabel">Extended target</div>
+          </div>
+          <div class="tp-desc">The extended target — approximately <strong>3× ATR from entry</strong>, or the full pattern projection depending on which is larger. This is for the final 20–30% of the position. Let this portion run as long as the trend continues. Only exit here if price shows signs of reversal or if a new opposing pattern forms.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Risk/Reward Ratio</div>
+            <div class="tp-sublabel">Return per dollar risked</div>
+          </div>
+          <div class="tp-desc">Calculated as <strong>(TP-1 minus Entry) ÷ (Entry minus Stop Loss)</strong>. A 2:1 ratio means you make $2 for every $1 you risk. This is the minimum threshold for most professional traders. Why? Because even with a 40% win rate, a 2:1 R/R means you're profitable. <strong>Never take a trade below 1.5:1</strong> — the math doesn't work in your favor.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Position Size %</div>
+            <div class="tp-sublabel">Portfolio allocation</div>
+          </div>
+          <div class="tp-desc">What percentage of your total portfolio to allocate to this trade. Based on the <strong>"2% rule"</strong> — risk no more than 2% of total capital per trade, divided by the ATR stop distance. Example: $10,000 portfolio, 2% risk = $200 max loss per trade. If stop is $2 away, position size = 100 shares. This keeps any single loss from being catastrophic.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Risk Score</div>
+            <div class="tp-sublabel">LOW / MEDIUM / HIGH</div>
+          </div>
+          <div class="tp-desc">A composite risk score combining: current <strong>volatility</strong> (ATR relative to price), <strong>RSI extremity</strong> (how overbought/oversold), <strong>distance from breakout</strong> (how extended is the move), <strong>MACD alignment</strong> (is momentum confirming?), and <strong>volume surge</strong> (is volume supporting the move?). LOW = favorable conditions. HIGH = multiple warning signs — reduce position size or skip.</div>
+        </div>
+
+        <div class="tp-row">
+          <div>
+            <div class="tp-label">Signal</div>
+            <div class="tp-sublabel">BUY / SELL / WATCH</div>
+          </div>
+          <div class="tp-desc"><strong>BUY:</strong> Bullish pattern detected with breakout alignment — conditions favor a long entry. <strong>SELL:</strong> Bearish pattern detected — conditions favor a short entry or exiting long positions. <strong>WATCH:</strong> Pattern is detected but no confirmed breakout yet. Add to your watchlist. Wait for a closing price above resistance (or below support) with above-average volume before acting.</div>
+        </div>
+
+      </div>
+    </div><!-- end lt-tradeplan -->
+
+    <!-- ── Tab 4: Markets & Events ── -->
+    <div id="lt-markets" class="learn-panel">
+      <p class="learn-section-intro">Technical patterns don't exist in a vacuum. Understanding what's driving the broader market helps you assess whether a pattern is likely to succeed or fail. Here's how major macro events affect different sectors.</p>
+
+      <div class="event-grid">
+
+        <div class="event-card">
+          <div class="event-title">📈 Interest Rate Hikes</div>
+          <div class="event-desc">The Fed raises rates to fight inflation. Borrowing costs rise across the economy. Growth stocks fall hardest because higher discount rates reduce the present value of future cash flows.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Banks +</span>
+            <span class="sector-tag sector-up">Financials +</span>
+            <span class="sector-tag sector-down">Tech −</span>
+            <span class="sector-tag sector-down">Biotech −</span>
+            <span class="sector-tag sector-down">REITs −</span>
+            <span class="sector-tag sector-down">Bonds fall</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">📉 Interest Rate Cuts</div>
+          <div class="event-desc">The Fed cuts rates to stimulate the economy. Cheaper borrowing fuels growth. Growth stocks rally as future earnings become more valuable. The dollar typically weakens.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Tech/Growth +</span>
+            <span class="sector-tag sector-up">Real Estate +</span>
+            <span class="sector-tag sector-up">Consumer Discretionary +</span>
+            <span class="sector-tag sector-down">Banks −</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">🔥 Inflation Rising</div>
+          <div class="event-desc">Real assets outperform. Energy, commodities, and materials protect purchasing power. High-growth tech suffers as discount rates rise and valuations compress.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Energy +</span>
+            <span class="sector-tag sector-up">Gold +</span>
+            <span class="sector-tag sector-up">Materials +</span>
+            <span class="sector-tag sector-up">Consumer Staples (neutral)</span>
+            <span class="sector-tag sector-down">Tech −</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">❄️ Inflation Falling (Disinflation)</div>
+          <div class="event-desc">Growth stocks recover as discount rates ease. Bond prices rise as yields drop. Consumer confidence improves, benefiting discretionary spending.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Tech/Growth +</span>
+            <span class="sector-tag sector-up">Bonds recover</span>
+            <span class="sector-tag sector-up">Consumer Discretionary +</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">💪 Strong Jobs Report</div>
+          <div class="event-desc">Signals a healthy economy — but also raises expectations for rate hikes. Dollar strengthens. Short-term: tech may fall on rate fears. Financial sector benefits from stronger economic activity.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Financials +</span>
+            <span class="sector-tag sector-up">USD +</span>
+            <span class="sector-tag sector-down">Tech volatile</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">😟 Weak Jobs Report</div>
+          <div class="event-desc">Raises expectations for rate cuts. Growth stocks rally on the prospect of easier monetary conditions. The market often "bad news is good news" when the Fed is expected to respond.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Tech/Growth +</span>
+            <span class="sector-tag sector-up">Rate-sensitive sectors +</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">⚔️ Geopolitical Tension / War</div>
+          <div class="event-desc">Triggers risk-off mode. Investors flee to safe havens. Defense spending surges. Oil spikes on supply disruption fears. Travel and tourism collapse immediately.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Defense +</span>
+            <span class="sector-tag sector-up">Gold +</span>
+            <span class="sector-tag sector-up">Oil spikes</span>
+            <span class="sector-tag sector-up">USD/Treasuries +</span>
+            <span class="sector-tag sector-down">Airlines −</span>
+            <span class="sector-tag sector-down">Travel −</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">😰 Recession Fears</div>
+          <div class="event-desc">Investors rotate to defensive sectors that provide stable earnings regardless of economic conditions. Cyclical sectors (tied to economic growth) get hit hardest.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Healthcare +</span>
+            <span class="sector-tag sector-up">Utilities +</span>
+            <span class="sector-tag sector-up">Consumer Staples +</span>
+            <span class="sector-tag sector-up">Gold +</span>
+            <span class="sector-tag sector-down">Auto/Retail −</span>
+            <span class="sector-tag sector-down">Industrials −</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">🎯 Strong Earnings Season</div>
+          <div class="event-desc">Broad market confidence rises. Individual stocks beating expectations become reliable technical breakouts — fundamentals and technicals align. Sector leaders attract capital flows.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Earnings beaters surge</span>
+            <span class="sector-tag sector-up">Sector leaders +</span>
+            <span class="sector-tag sector-down">Earnings misses punished</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">🔄 Fed Pivot</div>
+          <div class="event-desc">One of the biggest market catalysts. A pivot from hiking to cutting rates triggers a broad market rally — especially tech and growth. A pivot from cutting to hiking causes a broad selloff.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">Hike→Cut Pivot: Tech +</span>
+            <span class="sector-tag sector-up">Broad Market +</span>
+            <span class="sector-tag sector-down">Cut→Hike Pivot: Broad selloff</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">💵 Dollar Strengthening</div>
+          <div class="event-desc">A stronger dollar pressures commodities (priced in USD) and emerging markets (whose debt is often dollar-denominated). US multinationals with large foreign revenues see earnings compressed.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">US Importers +</span>
+            <span class="sector-tag sector-down">Commodities −</span>
+            <span class="sector-tag sector-down">Emerging Markets −</span>
+            <span class="sector-tag sector-down">US Multinationals −</span>
+          </div>
+        </div>
+
+        <div class="event-card">
+          <div class="event-title">💸 Dollar Weakening</div>
+          <div class="event-desc">A weaker dollar boosts commodity prices and makes US exports more competitive. Emerging markets rally as their currencies gain relative strength and dollar-denominated debt becomes easier to service.</div>
+          <div class="event-sectors">
+            <span class="sector-tag sector-up">US Exporters +</span>
+            <span class="sector-tag sector-up">Gold +</span>
+            <span class="sector-tag sector-up">Commodities +</span>
+            <span class="sector-tag sector-up">Emerging Markets +</span>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end lt-markets -->
+
+    <!-- ── Tab 5: Tips & Principles ── -->
+    <div id="lt-tips" class="learn-panel">
+      <p class="learn-section-intro">These principles separate consistently profitable traders from those who lose money. None of them are complicated — the difficulty is in applying them consistently, especially when emotions are running high.</p>
+
+      <div class="tips-grid">
+
+        <div class="tip-card">
+          <div class="tip-num">1</div>
+          <div class="tip-text"><strong>The 1–2% Rule.</strong> Never risk more than 1–2% of your total portfolio on a single trade. Position sizing is more important than entry timing. Even 10 consecutive losses only costs 10–20% of capital.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">2</div>
+          <div class="tip-text"><strong>Wait for the breakout.</strong> Don't anticipate. Enter after price actually closes above resistance (or below support) — not before. Most failed trades come from entering too early on hope rather than confirmation.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">3</div>
+          <div class="tip-text"><strong>Volume confirms everything.</strong> A breakout on weak volume has a 40–50% higher chance of failure. Wait for volume 1.5–2× the 20-bar average on the breakout candle before committing.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">4</div>
+          <div class="tip-text"><strong>Check the broader market first.</strong> Even the best individual setup fails in a strong bear market. Know whether the S&amp;P 500 is above or below its 200-day SMA before taking any new long positions.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">5</div>
+          <div class="tip-text"><strong>Multi-timeframe confirmation.</strong> If the daily chart shows an ascending triangle AND the weekly chart shows an uptrend, the setup is significantly stronger. Never fight the higher timeframe trend.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">6</div>
+          <div class="tip-text"><strong>Earnings can destroy any pattern instantly.</strong> Always check if an earnings announcement falls within your planned holding period. The best technical setup becomes worthless if the company misses earnings.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">7</div>
+          <div class="tip-text"><strong>Confidence Score above 70.</strong> Patterns scoring above 70 have strong geometry — multiple conditions are aligned. Below 50, treat it as low conviction and either reduce size or skip entirely.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">8</div>
+          <div class="tip-text"><strong>The 2:1 Rule.</strong> A Risk/Reward ratio below 2:1 is generally not worth taking. One losing trade wipes out two winners. The math only works in your favor at 2:1 or better.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">9</div>
+          <div class="tip-text"><strong>Diversify across sectors.</strong> Don't concentrate all capital in tech or any single industry. When a sector gets hit by macro headwinds, diversification is the only protection.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">10</div>
+          <div class="tip-text"><strong>Cut losses fast, let winners run.</strong> Most consistently profitable traders have win rates of only 40–50%. They profit because their winners are 2–3× bigger than their losers. This requires the emotional discipline to cut losses before they grow.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">11</div>
+          <div class="tip-text"><strong>The 200-day SMA matters most.</strong> The most watched line by institutional investors worldwide. Price above it = bull market territory. Below it = heightened caution on all long positions.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">12</div>
+          <div class="tip-text"><strong>Keep a trade journal.</strong> Record every entry, exit, the rationale, and what actually happened. Review it monthly. Professional traders attribute 30–40% of their improvement to journaling — it's the feedback loop that creates growth.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">13</div>
+          <div class="tip-text"><strong>Pattern reliability ranking (highest to lowest):</strong> Inverse H&amp;S &gt; Ascending Triangle &gt; Cup &amp; Handle &gt; Double Bottom &gt; Head &amp; Shoulders &gt; Falling Wedge &gt; Symmetrical Triangle. Weight your position sizing accordingly.</div>
+        </div>
+
+        <div class="tip-card">
+          <div class="tip-num">14</div>
+          <div class="tip-text"><strong>Multiple patterns on the same stock.</strong> When two or more patterns align simultaneously (rare), it's a high-conviction setup worth larger sizing — assuming all other conditions (volume, indicators, market environment) also align.</div>
+        </div>
+
+      </div>
+    </div><!-- end lt-tips -->
 
   </div>
 </div>
@@ -2469,12 +3530,132 @@ function mHideError() {
   document.getElementById('m-errorBanner').classList.remove('visible');
 }
 
+// ─── Quick Analyze ────────────────────────────────────────────────────────────
+
+let qaRefreshTimer   = null;
+let qaCountdownTimer = null;
+let qaLastParams     = null;
+const QA_INTERVAL_MS = 600000; // 10 minutes
+
+async function runQuickAnalyze() {
+  const ticker  = (document.getElementById('qa-ticker').value  || '').trim().toUpperCase();
+  const buyDate = (document.getElementById('qa-buyDate').value || '').trim();
+  const endDate = (document.getElementById('qa-endDate').value || '').trim() || null;
+
+  if (!ticker)  { mShowError('Please enter a stock ticker symbol.'); return; }
+  if (!buyDate) { mShowError('Please enter a buy date.'); return; }
+
+  qaLastParams = { ticker, buyDate, endDate };
+  await _doQuickAnalyze(ticker, buyDate, endDate, false);
+  _startAutoRefresh();
+}
+
+async function _doQuickAnalyze(ticker, buyDate, endDate, silent) {
+  mHideError();
+  if (!silent) {
+    document.getElementById('m-results').classList.remove('visible');
+    mShowLoading(true);
+  }
+  try {
+    const body = { ticker, buy_date: buyDate };
+    if (endDate) body.end_date = endDate;
+    const res  = await fetch(API + '/api/v1/quick_analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || 'Quick analyze failed');
+    renderResults(data, data.session_id);
+  } catch(err) {
+    if (!silent) mShowError(err.message);
+    else console.warn('Auto-refresh error:', err.message);
+  } finally {
+    if (!silent) mShowLoading(false);
+  }
+}
+
+function _startAutoRefresh() {
+  clearInterval(qaRefreshTimer);
+  clearInterval(qaCountdownTimer);
+
+  let remaining = QA_INTERVAL_MS / 1000;
+  _setCountdown(remaining);
+  document.getElementById('qa-refresh-bar').classList.add('visible');
+
+  qaCountdownTimer = setInterval(() => {
+    remaining = Math.max(0, remaining - 1);
+    _setCountdown(remaining);
+  }, 1000);
+
+  qaRefreshTimer = setInterval(() => {
+    if (qaLastParams) {
+      remaining = QA_INTERVAL_MS / 1000;
+      _doQuickAnalyze(qaLastParams.ticker, qaLastParams.buyDate, qaLastParams.endDate, true);
+    }
+  }, QA_INTERVAL_MS);
+}
+
+function _setCountdown(sec) {
+  const el = document.getElementById('qa-countdown');
+  if (!el) return;
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  el.textContent = m + ':' + String(s).padStart(2, '0');
+}
+
+async function downloadPrefilledExcel() {
+  const ticker  = (document.getElementById('qa-ticker').value  || '').trim().toUpperCase();
+  const buyDate = (document.getElementById('qa-buyDate').value || '').trim();
+  const endDate = (document.getElementById('qa-endDate').value || '').trim() || null;
+
+  if (!ticker)  { mShowError('Please enter a stock ticker symbol.'); return; }
+  if (!buyDate) { mShowError('Please enter a buy date.'); return; }
+
+  try {
+    let url = API + `/api/v1/prefilled_template?ticker=${encodeURIComponent(ticker)}&buy_date=${encodeURIComponent(buyDate)}`;
+    if (endDate) url += `&end_date=${encodeURIComponent(endDate)}`;
+    const res = await fetch(url);
+    if (!res.ok) { const e = await res.json(); throw new Error(e.detail || 'Download failed'); }
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `${ticker}_prefilled_${buyDate}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  } catch(err) {
+    mShowError('Download failed: ' + err.message);
+  }
+}
+
+function toggleAdvanced() {
+  const section = document.getElementById('advanced-workflow');
+  const btn     = document.getElementById('advanced-toggle-btn');
+  const opening = section.style.display === 'none';
+  section.style.display = opening ? 'block' : 'none';
+  btn.textContent = (opening ? '▼' : '▶') + ' Advanced: Upload Custom CSV';
+}
+
+// ─── Learn Page helpers ───────────────────────────────────────────────────────
+
+function learnTab(btn, panelId) {
+  document.querySelectorAll('.learn-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.learn-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+function accToggle(header) {
+  const card = header.closest('.acc-card');
+  card.classList.toggle('open');
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 // Navigate based on URL hash on load
 (function init() {
   const hash = window.location.hash.replace('#','');
-  if (hash === 'screener' || hash === 'manual') navigate(hash);
+  if (hash === 'screener' || hash === 'manual' || hash === 'learn') navigate(hash);
 })();
 </script>
 </body>

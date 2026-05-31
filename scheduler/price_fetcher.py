@@ -49,13 +49,24 @@ def _atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
 
 # ── Yahoo Finance fetchers ─────────────────────────────────────────────────────
 
-def fetch_history(ticker: str, period: str = "3mo") -> Optional[pd.DataFrame]:
-    """Download daily OHLCV and compute all indicators."""
+def fetch_history(
+    ticker: str,
+    period: str = "3mo",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> Optional[pd.DataFrame]:
+    """Download daily OHLCV and compute all indicators.
+
+    Pass start_date (YYYY-MM-DD) to fetch from that date to end_date (or today).
+    When start_date is omitted the period string is used instead.
+    """
     try:
         import yfinance as yf
-        raw = yf.Ticker(ticker).history(
-            period=period, interval="1d", auto_adjust=True
-        )
+        t = yf.Ticker(ticker)
+        if start_date:
+            raw = t.history(start=start_date, end=end_date, interval="1d", auto_adjust=True)
+        else:
+            raw = t.history(period=period, interval="1d", auto_adjust=True)
         if raw.empty:
             logger.warning(f"{ticker}: empty history from yfinance")
             return None

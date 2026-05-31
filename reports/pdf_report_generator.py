@@ -770,6 +770,204 @@ def _pattern_overlay_chart_inner(df: pd.DataFrame, res: TickerAnalysis) -> bytes
     return _fig_to_png(fig)
 
 
+# ─── Plain-English Interpretation Box ────────────────────────────────────────
+
+_PATTERN_PLAIN_ENGLISH = {
+    "ascending_triangle": (
+        "The stock is forming an ascending triangle — a bullish continuation pattern. "
+        "The price keeps hitting the same resistance level while the lows are rising, showing buyers "
+        "are getting more aggressive. A breakout above resistance typically targets a move equal to "
+        "the triangle's height."
+    ),
+    "descending_triangle": (
+        "A descending triangle has formed — a bearish continuation pattern. The price keeps hitting "
+        "the same support while the highs decline, showing sellers are in control. A breakdown below "
+        "support typically targets a move equal to the triangle's height downward."
+    ),
+    "symmetrical_triangle": (
+        "A symmetrical triangle is forming — a neutral consolidation pattern. Both buyers and sellers "
+        "are equally matched, compressing price toward an apex. The breakout direction typically "
+        "follows the prior trend."
+    ),
+    "bull_flag": (
+        "A bull flag is present — a short-term consolidation after a strong upward move. This is a "
+        "healthy pause before continuation. The measured price target is calculated by adding the "
+        "flag pole's height to the breakout point."
+    ),
+    "bear_flag": (
+        "A bear flag has formed — a brief consolidation after a sharp decline. The overall direction "
+        "remains bearish, with a continuation move expected downward once the flag's lower boundary "
+        "breaks."
+    ),
+    "pennant": (
+        "A pennant pattern is forming — similar to a flag but with converging trendlines creating a "
+        "small symmetrical triangle. This short consolidation typically resolves in the direction of "
+        "the prior trend."
+    ),
+    "head_and_shoulders": (
+        "A head and shoulders pattern has formed — one of the most reliable bearish reversal signals. "
+        "The pattern shows a peak (head) flanked by two lower peaks (shoulders). A break below the "
+        "neckline confirms the reversal."
+    ),
+    "inverse_head_and_shoulders": (
+        "An inverse head and shoulders has formed — considered the most reliable bullish reversal "
+        "pattern. Three troughs with the middle being the lowest. A break above the neckline "
+        "typically signals a sustained upward move."
+    ),
+    "double_top": (
+        "A double top has formed — a classic bearish reversal pattern. Two nearly equal highs signal "
+        "that buyers failed to push price higher on the second attempt. A break below the valley "
+        "between the two peaks confirms the reversal."
+    ),
+    "double_bottom": (
+        "A double bottom has formed — a bullish reversal pattern. Two nearly equal lows show sellers "
+        "couldn't push price lower on the second attempt. A break above the peak between the two "
+        "lows confirms the reversal."
+    ),
+    "triple_top": (
+        "A triple top has formed — a more reliable version of the double top. Three equal highs show "
+        "strong resistance. The pattern suggests a significant reversal downward upon breaking the "
+        "support level."
+    ),
+    "triple_bottom": (
+        "A triple bottom has formed — a more reliable bullish reversal. Three equal lows show strong "
+        "support buyers. Expect a significant move upward once the resistance between the troughs "
+        "is broken."
+    ),
+    "cup_and_handle": (
+        "A cup and handle pattern is present — a bullish continuation pattern. The rounded U-shaped "
+        "base (cup) followed by a small pullback (handle) signals accumulation. Breakout above the "
+        "cup's rim targets a move equal to the cup's depth."
+    ),
+    "rising_wedge": (
+        "A rising wedge has formed — a bearish reversal pattern. Despite price rising, the pattern "
+        "shows buyers losing momentum as the support and resistance lines converge upward. A break "
+        "below support typically leads to a sharp decline."
+    ),
+    "falling_wedge": (
+        "A falling wedge is present — a bullish reversal pattern. Price is declining but at a "
+        "slowing pace as the wedge narrows. A break above resistance typically leads to a "
+        "strong rally."
+    ),
+    "rectangle": (
+        "A rectangle (consolidation channel) has formed. Price is bouncing between flat support and "
+        "resistance levels. The breakout direction will likely follow the prior trend. This is a "
+        "waiting pattern — patience is required."
+    ),
+}
+
+
+def _build_plain_english_box(elements: list, res: TickerAnalysis, ST: dict):
+    """Add a 'What This Means For You' plain-English interpretation box."""
+    tp = res.top_pattern
+    rk = res.risk_assessment
+    tr = res.trade_recommendation
+
+    # ── Determine bullet lines ────────────────────────────────────────────────
+    lines = []
+
+    # Pattern explanation
+    if tp:
+        ptype = tp.pattern_type.value
+        pat_text = _PATTERN_PLAIN_ENGLISH.get(
+            ptype,
+            f"The engine detected a {ptype.replace('_', ' ').title()} pattern. "
+            "Review the pattern overlay chart above for the geometric details.",
+        )
+        lines.append(("Pattern", pat_text))
+    else:
+        lines.append(("Pattern", "No high-confidence pattern was detected for this ticker."))
+
+    # RSI
+    rsi = res.current_rsi
+    if rsi is None:
+        lines.append(("RSI", "RSI data not available for this ticker."))
+    elif rsi < 30:
+        lines.append(("RSI", f"RSI at {rsi:.0f} — oversold territory, a potential buy signal. "
+                              "Price may be due for a bounce; look for reversal confirmation before entering."))
+    elif rsi < 50:
+        lines.append(("RSI", f"RSI at {rsi:.0f} — below midpoint, moderate bearish momentum. "
+                              "Buyers are not yet in control of price action."))
+    elif rsi < 70:
+        lines.append(("RSI", f"RSI at {rsi:.0f} — above midpoint, moderate bullish momentum. "
+                              "Price has room to run before reaching overbought levels."))
+    else:
+        lines.append(("RSI", f"RSI at {rsi:.0f} — overbought territory, exercise caution on new longs. "
+                              "A pullback or consolidation may precede the next leg up."))
+
+    # MACD
+    macd = res.current_macd
+    if macd is None:
+        lines.append(("MACD", "MACD data not available for this ticker."))
+    elif macd >= 0:
+        lines.append(("MACD", f"MACD positive ({macd:.4f}) — bullish momentum. "
+                               "The short-term moving average is above the long-term, confirming upward pressure."))
+    else:
+        lines.append(("MACD", f"MACD negative ({macd:.4f}) — bearish momentum. "
+                                "The short-term moving average is below the long-term, confirming downward pressure."))
+
+    # Risk summary
+    if rk:
+        risk_val = rk.risk_score.value
+        risk_explanations = {
+            "LOW":    "This setup has relatively contained risk — ATR-based stop and favorable indicator alignment.",
+            "MEDIUM": "Moderate risk — ensure your position size accounts for this stock's volatility.",
+            "HIGH":   "High risk — consider reducing position size or waiting for a cleaner setup.",
+        }
+        lines.append(("Risk", f"Risk score is {risk_val}. "
+                               f"{risk_explanations.get(risk_val, 'Review risk metrics carefully.')}"))
+
+    # Signal action
+    if tr:
+        sig_val = tr.signal.value
+        sig_actions = {
+            "BUY":   "The engine recommends a BUY entry near the breakout level. "
+                     "Confirm with above-average volume before entering.",
+            "SELL":  "The engine signals a SELL / short entry. "
+                     "Confirm bearish volume and pattern geometry before acting.",
+            "WATCH": "No confirmed breakout yet. Watch for a close above/below the key level "
+                     "with volume confirmation before acting.",
+        }
+        lines.append(("Action", sig_actions.get(sig_val, f"Signal: {sig_val}.")))
+
+    # ── Build table ───────────────────────────────────────────────────────────
+    elements.append(Paragraph("What This Means For You", ST["h2"]))
+
+    box_style = ParagraphStyle(
+        "PlainEngBody", fontName="Helvetica", fontSize=8,
+        leading=12, textColor=C_SLATE, wordWrap="LTR",
+    )
+    label_style = ParagraphStyle(
+        "PlainEngLabel", fontName="Helvetica-Bold", fontSize=8,
+        leading=12, textColor=C_NAVY,
+    )
+
+    tbl_data = []
+    for label, text in lines:
+        tbl_data.append([
+            Paragraph(label, label_style),
+            Paragraph(text, box_style),
+        ])
+
+    box_tbl = Table(
+        tbl_data,
+        colWidths=[0.85 * inch, CONTENT_W - 0.85 * inch],
+    )
+    box_tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0, 0), (-1, -1), C_LIGHT),
+        ("VALIGN",        (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING",    (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 7),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 7),
+        ("GRID",          (0, 0), (-1, -1), 0.3, C_MED),
+        ("LINEABOVE",     (0, 0), (-1, 0),  1.0, C_BLUE),
+        ("ROWBACKGROUNDS",(0, 0), (-1, -1), [C_LIGHT, C_WHITE]),
+    ]))
+    elements.append(box_tbl)
+    elements.append(Spacer(1, 8))
+
+
 # ─── Per-Ticker Report Section ────────────────────────────────────────────────
 
 def _signal_badge_text(sig: str) -> str:
@@ -959,6 +1157,9 @@ def _build_ticker_section(
         if tr.summary_explanation:
             elements.append(Paragraph(tr.summary_explanation, ST["small"]))
 
+    # Plain-English interpretation box
+    _build_plain_english_box(elements, res, ST)
+
     # All detected patterns list
     if len(res.patterns_detected) > 1:
         elements.append(Spacer(1, 8))
@@ -1140,6 +1341,153 @@ def _build_education_page(elements: list, ST: dict):
     elements.append(Paragraph("Practical Tips", ST["h2"]))
     for tip in TIPS:
         elements.append(Paragraph(f"◆  {tip}", ST["edu_body"]))
+
+    elements.append(Spacer(1, 14))
+
+    # ── Section: Technical Indicators Reference ───────────────────────────────
+    elements.append(Paragraph("Technical Indicators Reference", ST["h2"]))
+
+    ind_hdr = ParagraphStyle("IndHdr", fontName="Helvetica-Bold", fontSize=7.5,
+                              textColor=C_WHITE, leading=10)
+    ind_lbl = ParagraphStyle("IndLbl", fontName="Helvetica-Bold", fontSize=7.5,
+                              textColor=C_NAVY, leading=10)
+    ind_bdy = ParagraphStyle("IndBdy", fontName="Helvetica", fontSize=7.5,
+                              textColor=C_SLATE, leading=11, wordWrap="LTR")
+
+    ind_col_w = [1.0*inch, 1.3*inch, 1.7*inch, CONTENT_W - 4.0*inch]
+    ind_data = [
+        [Paragraph(h, ind_hdr) for h in
+         ["Indicator", "What It Measures", "How to Read It", "What to Watch For"]],
+        [Paragraph("RSI (14)", ind_lbl),
+         Paragraph("Momentum oscillator 0–100", ind_bdy),
+         Paragraph("Below 30: oversold (buy signal). Above 70: overbought (sell signal). 40–60: neutral range.", ind_bdy),
+         Paragraph("Divergence: price makes new high but RSI doesn't = potential reversal.", ind_bdy)],
+        [Paragraph("MACD", ind_lbl),
+         Paragraph("Trend + momentum", ind_bdy),
+         Paragraph("MACD crosses above signal line = bullish. Below = bearish. Histogram shows strength.", ind_bdy),
+         Paragraph("Histogram shrinking = momentum fading. Zero-line crossover = trend change.", ind_bdy)],
+        [Paragraph("ATR (14)", ind_lbl),
+         Paragraph("Volatility in dollar terms", ind_bdy),
+         Paragraph("Higher ATR = more volatile stock, needs wider stops. Lower ATR = quieter stock.", ind_bdy),
+         Paragraph("Rising ATR during a breakout confirms strong momentum.", ind_bdy)],
+        [Paragraph("Bollinger Bands", ind_lbl),
+         Paragraph("Price vs. statistical range", ind_bdy),
+         Paragraph("Price at upper band = extended. Lower band = oversold. Band squeeze = breakout approaching.", ind_bdy),
+         Paragraph('"Walking the band" (price hugs upper/lower) = strong trend, not reversal.', ind_bdy)],
+        [Paragraph("EMA-20 / EMA-50", ind_lbl),
+         Paragraph("Short/medium-term trend", ind_bdy),
+         Paragraph("Price above both = uptrend. Below both = downtrend. EMA-20 crosses EMA-50 up = golden cross.", ind_bdy),
+         Paragraph("EMA-20 crossing below EMA-50 = death cross (bearish).", ind_bdy)],
+        [Paragraph("SMA-200", ind_lbl),
+         Paragraph("Long-term trend", ind_bdy),
+         Paragraph("Price above = bull market territory. Below = caution.", ind_bdy),
+         Paragraph("Most watched line by institutional investors worldwide.", ind_bdy)],
+        [Paragraph("Volume", ind_lbl),
+         Paragraph("Conviction behind price moves", ind_bdy),
+         Paragraph("Rising price + rising volume = strong trend. Breakout on low volume = suspect.", ind_bdy),
+         Paragraph("Volume spike 2–3x average on breakout = institutional participation.", ind_bdy)],
+    ]
+    ind_tbl = Table(ind_data, colWidths=ind_col_w)
+    ind_tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0, 0), (-1, 0), C_NAVY),
+        ("VALIGN",        (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING",    (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 6),
+        ("ROWBACKGROUNDS",(0, 1), (-1, -1), [C_WHITE, C_LIGHT]),
+        ("GRID",          (0, 0), (-1, -1), 0.3, C_MED),
+    ]))
+    elements.append(ind_tbl)
+    elements.append(Spacer(1, 12))
+
+    # ── Section: How Global Events Move Markets ───────────────────────────────
+    elements.append(Paragraph("How Global Events Move Markets", ST["h2"]))
+
+    evt_col_w = [1.3*inch, 1.8*inch, CONTENT_W - 3.1*inch]
+    evt_data = [
+        [Paragraph(h, ind_hdr) for h in
+         ["Event", "Primary Impact", "Sectors Affected"]],
+        [Paragraph("Fed Rate Hike", ind_lbl),
+         Paragraph("Dollar strengthens, borrowing costs rise, growth stocks fall.", ind_bdy),
+         Paragraph("Banks +, Tech/Growth −, REITs −, Bonds fall in price.", ind_bdy)],
+        [Paragraph("Fed Rate Cut", ind_lbl),
+         Paragraph("Cheaper credit, growth stocks rally, dollar weakens.", ind_bdy),
+         Paragraph("Tech/Growth +, Real Estate +, Consumer Discretionary +, Banks −.", ind_bdy)],
+        [Paragraph("High Inflation", ind_lbl),
+         Paragraph("Real assets outperform, purchasing power erodes.", ind_bdy),
+         Paragraph("Energy +, Gold +, Materials +, Consumer Staples neutral, Tech −.", ind_bdy)],
+        [Paragraph("Falling Inflation", ind_lbl),
+         Paragraph("Growth stocks recover, bond yields drop.", ind_bdy),
+         Paragraph("Tech/Growth +, Bonds recover, Consumer Discretionary +.", ind_bdy)],
+        [Paragraph("Strong Jobs Report", ind_lbl),
+         Paragraph("Economic health signal, rate hike fears rise.", ind_bdy),
+         Paragraph("Financials +, Short-term USD +, Tech volatile.", ind_bdy)],
+        [Paragraph("Geopolitical Tension", ind_lbl),
+         Paragraph("Risk-off mode, safe havens surge.", ind_bdy),
+         Paragraph("Gold +, Defense +, Oil spikes, Airlines −, Travel −.", ind_bdy)],
+        [Paragraph("Recession Fears", ind_lbl),
+         Paragraph("Defensive rotation, risk-off sentiment.", ind_bdy),
+         Paragraph("Healthcare +, Utilities +, Consumer Staples +, Cyclicals −.", ind_bdy)],
+        [Paragraph("Earnings Season Beat", ind_lbl),
+         Paragraph("Market-wide confidence, momentum in winners.", ind_bdy),
+         Paragraph("Individual stocks with beats surge; sector leaders attract capital.", ind_bdy)],
+        [Paragraph("Dollar Strengthening", ind_lbl),
+         Paragraph("Pressures commodities, helps importers.", ind_bdy),
+         Paragraph("US Importers +, Commodities −, Emerging Markets −.", ind_bdy)],
+        [Paragraph("Dollar Weakening", ind_lbl),
+         Paragraph("Boosts commodities, helps exporters.", ind_bdy),
+         Paragraph("US Exporters +, Gold +, Emerging Markets +.", ind_bdy)],
+    ]
+    evt_tbl = Table(evt_data, colWidths=evt_col_w)
+    evt_tbl.setStyle(TableStyle([
+        ("BACKGROUND",    (0, 0), (-1, 0), C_NAVY),
+        ("VALIGN",        (0, 0), (-1, -1), "TOP"),
+        ("TOPPADDING",    (0, 0), (-1, -1), 5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
+        ("LEFTPADDING",   (0, 0), (-1, -1), 6),
+        ("RIGHTPADDING",  (0, 0), (-1, -1), 6),
+        ("ROWBACKGROUNDS",(0, 1), (-1, -1), [C_WHITE, C_LIGHT]),
+        ("GRID",          (0, 0), (-1, -1), 0.3, C_MED),
+    ]))
+    elements.append(evt_tbl)
+    elements.append(Spacer(1, 12))
+
+    # ── Section: Core Trading Principles ─────────────────────────────────────
+    elements.append(Paragraph("Core Trading Principles", ST["h2"]))
+
+    principles = [
+        ("1. The 1–2% Rule",
+         "Never risk more than 1–2% of your total portfolio on a single trade. If you have $10,000, "
+         "risk no more than $100–$200 per trade. This means even 10 consecutive losses only costs "
+         "10–20% of your capital."),
+        ("2. Wait for Confirmation",
+         "Do not enter before the breakout. Wait for price to close above resistance (or below "
+         "support) with volume. Anticipating breakouts is one of the most common and costly mistakes."),
+        ("3. The 2:1 Rule",
+         "Only take trades where the potential reward is at least 2x the potential loss. This means "
+         "a 40% win rate is still profitable if your average winner is 2x your average loser."),
+        ("4. Multi-Timeframe Analysis",
+         "Confirm your setup on at least 2 timeframes. A pattern on the daily chart is more reliable "
+         "when the weekly chart is also bullish."),
+        ("5. Volume is Truth",
+         "Price can lie; volume doesn't. Every significant move should be confirmed by above-average "
+         "volume. Breakouts on light volume fail more than 50% of the time."),
+        ("6. Manage Your Emotions",
+         "The two biggest trading mistakes are cutting winners too early (fear of giving back gains) "
+         "and holding losers too long (hoping they recover). Define your exits BEFORE you enter."),
+        ("7. Keep a Trade Journal",
+         "Record every trade: entry, exit, pattern, indicators at entry, outcome, what you learned. "
+         "Review monthly. Professional traders attribute 30–40% of their improvement to journaling."),
+        ("8. Sector Awareness",
+         "Always know what macro environment you are trading in. Even the best technical setup can "
+         "fail against a sector headwind. Check if your stock's sector is in or out of favor."),
+    ]
+    for label, desc in principles:
+        elements.append(Paragraph(
+            f"<b>{label}:</b>  {desc}",
+            ST["edu_body"],
+        ))
 
     elements.append(Spacer(1, 12))
     elements.append(HRFlowable(width=CONTENT_W, thickness=1, color=C_MED, spaceAfter=6))

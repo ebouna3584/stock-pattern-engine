@@ -43,16 +43,17 @@ app.add_middleware(
 
 # Register all API routes at import time so FastAPI builds the routing table
 from api.endpoints import upload, analyze, report, template
-from api.endpoints import watchlist, ws
+from api.endpoints import watchlist, ws, quick_analyze
 from fastapi import APIRouter
 
 api_router = APIRouter()
-api_router.include_router(template.router,  tags=["Template"])
-api_router.include_router(upload.router,    tags=["Upload"])
-api_router.include_router(analyze.router,   tags=["Analysis"])
-api_router.include_router(report.router,    tags=["Reports"])
-api_router.include_router(watchlist.router, tags=["Watchlist"])
-api_router.include_router(ws.router,        tags=["Live"])
+api_router.include_router(template.router,      tags=["Template"])
+api_router.include_router(upload.router,        tags=["Upload"])
+api_router.include_router(analyze.router,       tags=["Analysis"])
+api_router.include_router(quick_analyze.router, tags=["Quick Analyze"])
+api_router.include_router(report.router,        tags=["Reports"])
+api_router.include_router(watchlist.router,     tags=["Watchlist"])
+api_router.include_router(ws.router,            tags=["Live"])
 
 app.include_router(api_router, prefix="/api/v1")
 
