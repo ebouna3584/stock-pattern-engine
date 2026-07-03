@@ -1,5 +1,4 @@
-from fastapi import FastAPI
-from stock_pattern_engine.api.main import app  # your existing FastAPI app
+from api.main import app as fastapi_app
 
-# Vercel expects this
-handler = app
+app = fastapi_app
+handler = fastapi_app
