@@ -1,4 +1,5 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -17,13 +18,14 @@ _frontend = Path(__file__).parent.parent / "frontend"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # ── Startup: scheduler only (routes already registered at import time) ────
-    from scheduler.job_manager import start_scheduler
-    start_scheduler()
+    # Vercel serverless functions should not start long-running background jobs.
+    if os.getenv("VERCEL") is None:
+        from scheduler.job_manager import start_scheduler
+        start_scheduler()
     yield
-    # ── Shutdown ──────────────────────────────────────────────────────────────
-    from scheduler.job_manager import stop_scheduler
-    stop_scheduler()
+    if os.getenv("VERCEL") is None:
+        from scheduler.job_manager import stop_scheduler
+        stop_scheduler()
 
 
 app = FastAPI(
