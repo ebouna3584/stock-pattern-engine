@@ -1,12 +1,12 @@
 """
-Watchlist manager — max 3 tickers (free tier).
+Watchlist manager — max 4 tickers (free tier).
 Persists to watchlist.json in the project root.
 """
 import json
 from pathlib import Path
 from threading import Lock
 
-MAX_TICKERS = 3
+MAX_TICKERS = 4
 _STORE = Path(__file__).parent.parent / "watchlist.json"
 _lock = Lock()
 

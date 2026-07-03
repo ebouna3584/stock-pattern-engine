@@ -9,26 +9,29 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
 
     :root {
-      --bg:        #0a0f1e;
-      --bg2:       #0f172a;
-      --bg3:       #1e293b;
-      --border:    #1e3a5f;
-      --border2:   #334155;
-      --text:      #f1f5f9;
-      --muted:     #64748b;
-      --dim:       #94a3b8;
-      --green:     #10b981;
-      --green-dim: rgba(16,185,129,0.15);
-      --red:       #ef4444;
-      --red-dim:   rgba(239,68,68,0.15);
-      --amber:     #f59e0b;
-      --amber-dim: rgba(245,158,11,0.15);
-      --blue:      #3b82f6;
-      --blue-dim:  rgba(59,130,246,0.12);
-      --cyan:      #06b6d4;
+      --bg:        #040816;
+      --bg2:       rgba(8, 13, 28, 0.95);
+      --bg3:       rgba(13, 21, 40, 0.94);
+      --border:    rgba(148, 163, 184, 0.18);
+      --border2:   rgba(148, 163, 184, 0.24);
+      --text:      #f5f7ff;
+      --muted:     #7c8aa7;
+      --dim:       #a6b2c8;
+      --green:     #33d17a;
+      --green-dim: rgba(51,209,122,0.16);
+      --red:       #ff6b7a;
+      --red-dim:   rgba(255,107,122,0.16);
+      --amber:     #f8b84e;
+      --amber-dim: rgba(248,184,78,0.16);
+      --blue:      #5aa9ff;
+      --blue-dim:  rgba(90,169,255,0.15);
+      --cyan:      #4dd4ff;
+      --surface: linear-gradient(145deg, rgba(12, 19, 36, 0.97), rgba(5, 10, 21, 0.96));
+      --surface-2: linear-gradient(135deg, rgba(90,169,255,0.14), rgba(77,212,255,0.06));
+      --shadow: 0 24px 70px rgba(2, 6, 23, 0.48);
       --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
     }
 
@@ -36,11 +39,50 @@
 
     body {
       font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(90,169,255,0.18), transparent 24%),
+        radial-gradient(circle at 100% 0%, rgba(77,212,255,0.14), transparent 26%),
+        linear-gradient(135deg, #020611 0%, #060b17 45%, #030611 100%);
       color: var(--text);
       min-height: 100vh;
       font-size: 14px;
       line-height: 1.5;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: -20%;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.035) 45%, transparent 100%);
+      transform: translateX(-120%);
+      animation: sheen 10s linear infinite;
+      z-index: 0;
+      opacity: 0.8;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.026) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.026) 1px, transparent 1px);
+      background-size: 78px 78px;
+      mask-image: radial-gradient(circle at center, black 28%, transparent 90%);
+      opacity: 0.16;
+      z-index: 0;
+    }
+
+    ::selection {
+      background: rgba(90,169,255,0.28);
+      color: #fff;
+    }
+
+    @keyframes sheen {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(120%); }
     }
 
     /* ── Navbar ── */
@@ -161,6 +203,14 @@
     }
     .ws-dot.connected { background: var(--blue); }
 
+    .market-clock {
+      font-size: 11px;
+      color: var(--dim);
+      text-align: right;
+      line-height: 1.2;
+      min-width: 8rem;
+    }
+
     /* ── Pages ── */
     .page { display: none; }
     .page.active { display: block; }
@@ -216,10 +266,8 @@
     .hero {
       min-height: calc(100vh - 56px);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
       padding: 4rem 2rem;
       position: relative;
       overflow: hidden;
@@ -228,8 +276,29 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.08) 0%, transparent 70%);
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.1) 0%, transparent 70%);
       pointer-events: none;
+    }
+    .hero-shell {
+      width: min(1280px, 100%);
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 2rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-shell::after {
+      content: '';
+      position: absolute;
+      inset: -3rem;
+      background: radial-gradient(circle at 20% 20%, rgba(90,169,255,0.14), transparent 28%), radial-gradient(circle at 80% 20%, rgba(77,212,255,0.12), transparent 32%);
+      filter: blur(24px);
+      z-index: -1;
+      pointer-events: none;
+    }
+    .hero-copy {
+      text-align: left;
     }
     .hero-badge {
       display: inline-flex;
@@ -247,12 +316,13 @@
       text-transform: uppercase;
     }
     .hero h1 {
-      font-size: 4rem;
+      font-size: clamp(2.6rem, 5vw, 4rem);
       font-weight: 800;
       letter-spacing: -0.04em;
       line-height: 1.05;
       margin-bottom: 1.5rem;
       color: var(--text);
+      text-align: left;
     }
     .hero h1 .gradient-blue {
       background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
@@ -263,30 +333,266 @@
     .hero-sub {
       font-size: 1.05rem;
       color: var(--dim);
-      max-width: 560px;
+      max-width: 630px;
       line-height: 1.65;
-      margin-bottom: 2.5rem;
+      margin-bottom: 2rem;
+      text-align: left;
     }
     .hero-ctas {
       display: flex;
       gap: 1rem;
       align-items: center;
       margin-bottom: 2rem;
+      justify-content: flex-start;
+      flex-wrap: wrap;
     }
     .hero-ctas .btn { padding: 0.75rem 1.75rem; font-size: 14px; }
-    .hero-stats {
-      font-size: 12px;
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+      margin-top: 1.25rem;
+    }
+    .hero-meta-card {
+      padding: 0.8rem 0.9rem;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148,163,184,0.14);
+      min-height: 74px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+    .hero-meta-card:hover {
+      border-color: rgba(90,169,255,0.26);
+      background: rgba(90,169,255,0.08);
+      transform: translateY(-2px);
+    }
+    .hero-meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       color: var(--muted);
+    }
+    .hero-meta-card strong {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .hero-visual-card {
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(9,15,27,0.96));
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: 0 28px 70px rgba(2,6,23,0.45);
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      position: relative;
+      isolation: isolate;
+    }
+    .hero-visual-card::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(90,169,255,0.1), transparent 30%, transparent 70%, rgba(77,212,255,0.08));
+      pointer-events: none;
+      z-index: -1;
+    }
+    .hero-visual-surface {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 100%;
+    }
+    .hero-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.95rem 1rem 0.4rem;
+    }
+    .hero-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.42rem 0.72rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.14);
+      background: rgba(255,255,255,0.03);
+      color: var(--dim);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .hero-status-pill::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(16,185,129,0.16);
+    }
+    .hero-status-pill--accent {
+      color: var(--text);
+      border-color: rgba(90,169,255,0.2);
+      background: rgba(90,169,255,0.08);
+    }
+    .hero-marquee {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(148,163,184,0.14);
+      overflow: hidden;
+      background: rgba(255,255,255,0.025);
+      position: relative;
+      mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%);
+    }
+    .hero-marquee-track {
+      display: flex;
+      gap: 0.85rem;
+      width: max-content;
+      animation: hero-marquee 22s linear infinite;
+      will-change: transform;
+      white-space: nowrap;
+    }
+    .hero-marquee:hover .hero-marquee-track {
+      animation-play-state: paused;
+    }
+    .hero-ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.4rem 0.7rem;
+      border-radius: 999px;
+      background: rgba(30,41,59,0.85);
+      border: 1px solid rgba(148,163,184,0.16);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
       letter-spacing: 0.01em;
     }
-    .hero-stats span {
+    .hero-ticker-item.up { color: var(--green); }
+    .hero-ticker-item.down { color: var(--red); }
+    .hero-chart-card {
+      padding: 1rem 1rem 1.2rem;
+      position: relative;
+      isolation: isolate;
+    }
+    .hero-chart-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(140deg, rgba(90,169,255,0.06), transparent 52%, rgba(77,212,255,0.04));
+      z-index: -1;
+      pointer-events: none;
+    }
+    .hero-chart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+    }
+    .hero-chart-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .hero-chart-subtitle {
+      font-size: 0.77rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .hero-chart-select {
+      background: rgba(15,23,42,0.9);
+      color: var(--text);
+      border: 1px solid rgba(59,130,246,0.25);
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-size: 12px;
+      outline: none;
+    }
+    .hero-chart-wrap {
+      height: 220px;
+      position: relative;
+      border-radius: 16px;
+      padding: 0.2rem;
+      border: 1px solid rgba(148,163,184,0.14);
+      background: rgba(255,255,255,0.02);
+    }
+    .hero-chart-hint {
+      margin-top: 0.8rem;
+      padding-top: 0.75rem;
+      font-size: 0.8rem;
       color: var(--dim);
-      font-weight: 500;
+      border-top: 1px solid rgba(148,163,184,0.14);
+    }
+    @keyframes hero-marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
     }
 
     .features-section {
-      padding: 5rem 0;
+      padding: 5.5rem 0;
       border-top: 1px solid var(--border);
+      position: relative;
+    }
+    .features-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(90,169,255,0.04), transparent 32%);
+      pointer-events: none;
+    }
+    .features-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 2rem;
+      align-items: start;
+    }
+    .features-intro {
+      position: sticky;
+      top: 90px;
+    }
+    .feature-rail {
+      margin-top: 1.6rem;
+      padding: 1.2rem 1.2rem 1.25rem;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148,163,184,0.14);
+    }
+    .feature-rail-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.45rem;
+    }
+    .feature-rail p {
+      font-size: 13px;
+      color: var(--dim);
+      line-height: 1.6;
+      margin-bottom: 0.9rem;
+    }
+    .feature-rail-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .feature-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(90,169,255,0.1);
+      color: var(--blue);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
     }
     .section-eyebrow {
       text-align: center;
@@ -312,19 +618,36 @@
     }
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
     }
     .feature-card {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      transition: border-color 0.2s, transform 0.2s;
+      background: linear-gradient(145deg, rgba(8, 14, 28, 0.96), rgba(4, 8, 17, 0.96));
+      border: 1px solid rgba(148,163,184,0.15);
+      border-radius: 20px;
+      padding: 1.4rem;
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 210px;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(125deg, rgba(90,169,255,0.09), transparent 55%);
+      pointer-events: none;
     }
     .feature-card:hover {
-      border-color: var(--border2);
-      transform: translateY(-2px);
+      border-color: rgba(90,169,255,0.28);
+      transform: translateY(-3px);
+      box-shadow: 0 18px 42px rgba(2,6,23,0.34);
+    }
+    .features-grid .feature-card:nth-child(odd) {
+      transform: translateY(8px);
+    }
+    .features-grid .feature-card:nth-child(odd):hover {
+      transform: translateY(5px);
     }
     .feature-icon {
       font-size: 1.5rem;
@@ -344,13 +667,23 @@
     }
 
     .how-section {
-      padding: 5rem 0;
+      padding: 5.5rem 0;
       border-top: 1px solid var(--border);
+    }
+    .how-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+      gap: 2rem;
+      align-items: start;
+    }
+    .how-copy {
+      position: sticky;
+      top: 90px;
     }
     .steps-row {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
       position: relative;
     }
     .steps-row::before {
@@ -365,23 +698,28 @@
     .step-item {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 1rem;
+      align-items: flex-start;
+      text-align: left;
+      gap: 0.85rem;
+      padding: 1.1rem;
+      border-radius: 0;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(148,163,184,0.12);
+      min-height: 208px;
     }
     .step-num {
-      width: 56px;
-      height: 56px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: var(--bg2);
-      border: 2px solid var(--border);
+      background: rgba(90,169,255,0.12);
+      border: 1px solid rgba(90,169,255,0.26);
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-mono);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--blue);
+      color: var(--cyan);
       position: relative;
       z-index: 1;
     }
@@ -403,6 +741,60 @@
       color: var(--muted);
       font-size: 12px;
       line-height: 1.7;
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .navbar,
+    .nav-link,
+    .btn,
+    .btn-sm,
+    .hero-badge,
+    .hero-meta-card,
+    .hero-visual-card,
+    .hero-ticker-item,
+    .hero-chart-select,
+    .feature-card,
+    .feature-rail,
+    .step-item,
+    .step-num,
+    .feature-pill,
+    .ticker-chip,
+    .add-ticker-form input,
+    .qa-input,
+    .pnl-edit-form input,
+    .drop-zone,
+    .alert-bar,
+    .manual-step-card,
+    .qa-panel,
+    .metric-card,
+    .trade-plan-card,
+    .patterns-card,
+    .acc-card,
+    .acc-badge,
+    .acc-detail-item,
+    .acc-preview,
+    .event-card,
+    .sector-tag,
+    .tip-card,
+    .ind-card,
+    .tp-row,
+    .chart-card,
+    .grid-wrap,
+    .summary-bar,
+    .watchlist-bar,
+    .screener-control-bar {
+      border-radius: 0 !important;
     }
 
     /* ═══════════════════════════════════════════
@@ -1204,6 +1596,10 @@
     .badge-bearish { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
     .badge-neutral { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
     .badge-reversal { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    .acc-preview { width: 120px; min-width: 120px; height: 64px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .acc-preview svg { width: calc(100% - 10px); height: calc(100% - 10px); }
+    .acc-preview svg path, .acc-preview svg line { fill: none; stroke: rgba(241,245,249,0.9); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .acc-preview svg .pattern-guide { stroke: rgba(241,245,249,0.35); stroke-dasharray: 4 4; }
     .acc-title { font-size: 14px; font-weight: 600; color: var(--text); }
     .acc-summary { font-size: 12px; color: var(--muted); max-width: 60ch; }
     .acc-chevron { color: var(--muted); font-size: 11px; flex-shrink: 0; transition: transform 0.2s; }
@@ -1251,6 +1647,305 @@
     .tp-sublabel { font-size: 10px; color: var(--muted); margin-top: 0.15rem; text-transform: uppercase; letter-spacing: 0.04em; }
     .tp-desc { font-size: 12.5px; color: var(--dim); line-height: 1.65; }
     .tp-desc strong { color: var(--text); }
+    .page {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s ease;
+    }
+    .page.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .navbar {
+      background: rgba(2, 6, 23, 0.72);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      backdrop-filter: blur(24px);
+      box-shadow: 0 10px 40px rgba(2, 6, 23, 0.2);
+    }
+
+    .nav-link {
+      color: rgba(226, 232, 240, 0.76);
+      border-radius: 999px;
+      transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+    }
+    .nav-link:hover {
+      color: #fff;
+      background: rgba(90,169,255,0.12);
+      transform: translateY(-1px);
+    }
+    .nav-link.active {
+      color: #fff;
+      background: rgba(90,169,255,0.14);
+      box-shadow: inset 0 0 0 1px rgba(90,169,255,0.16);
+    }
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(2, 6, 23, 0.22);
+      letter-spacing: 0.01em;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.2) 35%, transparent 70%);
+      transform: translateX(-120%);
+      transition: transform 0.6s ease;
+      pointer-events: none;
+    }
+    .btn:hover::before {
+      transform: translateX(120%);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 100%);
+      color: #04111f;
+      font-weight: 700;
+      box-shadow: 0 16px 35px rgba(77,212,255,0.18);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #7bc4ff 0%, #7fe0ff 100%);
+      transform: translateY(-1px);
+    }
+    .btn-outline {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(148,163,184,0.2);
+      color: var(--text);
+      backdrop-filter: blur(12px);
+    }
+    .btn-outline:hover:not(:disabled) {
+      border-color: rgba(90,169,255,0.38);
+      background: rgba(90,169,255,0.1);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(148,163,184,0.16);
+      color: var(--dim);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .hero {
+      padding: 4.6rem 2rem 5.4rem;
+    }
+    .hero-shell {
+      gap: 2.4rem;
+    }
+    .hero-badge {
+      background: rgba(90,169,255,0.12);
+      border: 1px solid rgba(90,169,255,0.24);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .hero h1 {
+      text-shadow: 0 10px 36px rgba(2,6,23,0.3);
+    }
+    .hero-visual-card {
+      position: relative;
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: var(--shadow);
+      background: linear-gradient(145deg, rgba(8, 15, 31, 0.98), rgba(4, 9, 20, 0.96));
+      overflow: hidden;
+    }
+    .hero-visual-card::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(90,169,255,0.08), transparent 32%, transparent 70%, rgba(77,212,255,0.08));
+    }
+    .hero-marquee {
+      background: rgba(255,255,255,0.025);
+      border-bottom: 1px solid rgba(148,163,184,0.14);
+      backdrop-filter: blur(10px);
+    }
+    .hero-ticker-item {
+      background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      border: 1px solid rgba(148,163,184,0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+      padding: 0.42rem 0.72rem;
+    }
+    .hero-chart-card {
+      padding: 1.1rem 1.1rem 1.25rem;
+    }
+    .hero-chart-select {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(90,169,255,0.2);
+      color: var(--text);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .hero-chart-wrap {
+      height: 240px;
+      padding: 0.2rem 0;
+    }
+
+    .features-section,
+    .how-section {
+      position: relative;
+      z-index: 1;
+    }
+    .feature-card,
+    .manual-step-card,
+    .qa-panel,
+    .metric-card,
+    .trade-plan-card,
+    .patterns-card,
+    .acc-card,
+    .event-card,
+    .tip-card,
+    .ind-card,
+    .tp-row,
+    .chart-card,
+    .grid-wrap,
+    .alert-bar,
+    .watchlist-bar,
+    .screener-control-bar,
+    .summary-bar {
+      background: linear-gradient(145deg, rgba(11, 18, 34, 0.97), rgba(5, 10, 21, 0.96));
+      border: 1px solid rgba(148,163,184,0.16);
+      box-shadow: 0 16px 42px rgba(2,6,23,0.28);
+      backdrop-filter: blur(16px);
+    }
+    .feature-card,
+    .manual-step-card,
+    .metric-card,
+    .trade-plan-card,
+    .patterns-card,
+    .acc-card,
+    .event-card,
+    .tip-card,
+    .ind-card,
+    .tp-row,
+    .chart-card,
+    .grid-wrap,
+    .summary-bar,
+    .qa-panel {
+      border-radius: 18px;
+    }
+    .feature-card:hover,
+    .manual-step-card:hover,
+    .acc-card:hover,
+    .tip-card:hover,
+    .ind-card:hover,
+    .chart-card:hover {
+      border-color: rgba(90,169,255,0.28);
+      transform: translateY(-2px);
+      box-shadow: 0 22px 48px rgba(2,6,23,0.34);
+    }
+
+    .feature-icon,
+    .step-num,
+    .drop-zone-icon,
+    .tip-num {
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(77,212,255,0.16);
+    }
+
+    .screener-control-bar,
+    .watchlist-bar {
+      border-left: 1px solid rgba(148,163,184,0.16);
+      border-right: 1px solid rgba(148,163,184,0.16);
+      margin: 0 1.25rem;
+      padding-left: 1.25rem;
+      padding-right: 1.25rem;
+    }
+    .watchlist-bar {
+      border-top: 1px solid rgba(148,163,184,0.14);
+    }
+    .ticker-chip {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .add-ticker-form input,
+    .qa-input,
+    .pnl-edit-form input {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid rgba(148,163,184,0.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .add-ticker-form input:focus,
+    .qa-input:focus,
+    .pnl-edit-form input:focus {
+      border-color: rgba(90,169,255,0.42);
+      box-shadow: 0 0 0 3px rgba(90,169,255,0.14);
+    }
+
+    .grid-table thead th {
+      background: rgba(255,255,255,0.035);
+      letter-spacing: 0.08em;
+      color: var(--dim);
+    }
+    .grid-table tbody tr:hover td {
+      background: rgba(90,169,255,0.06);
+    }
+    .grid-table tbody td {
+      border-bottom: 1px solid rgba(148,163,184,0.1);
+    }
+
+    .chart-tab {
+      border-radius: 999px;
+      padding: 0.34rem 0.7rem;
+    }
+    .chart-tab.active {
+      color: #fff;
+      background: rgba(90,169,255,0.12);
+      border-bottom-color: transparent;
+    }
+    .chart-body {
+      padding: 0.7rem 1rem 1rem;
+    }
+
+    .alert-bar {
+      border-color: rgba(148,163,184,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .drop-zone {
+      border: 1px dashed rgba(90,169,255,0.28);
+      background: rgba(90,169,255,0.05);
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+    .drop-zone:hover,
+    .drop-zone.dragging {
+      border-color: rgba(77,212,255,0.56);
+      background: rgba(77,212,255,0.1);
+      transform: translateY(-1px);
+    }
+
+    .acc-header:hover {
+      background: rgba(90,169,255,0.06);
+    }
+    .acc-body-inner,
+    .acc-detail-item,
+    .tp-desc,
+    .event-desc,
+    .tip-text,
+    .ind-body,
+    .manual-step-desc,
+    .feature-desc,
+    .step-desc,
+    .hero-chart-hint,
+    .hero-chart-subtitle,
+    .hero-sub {
+      color: var(--dim);
+    }
+
+    .home-footer {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.02);
+      backdrop-filter: blur(10px);
+    }
   </style>
 </head>
 <body>
@@ -1273,8 +1968,9 @@
   <div class="navbar-right">
     <div class="market-pill" id="market-pill">
       <div class="market-dot" id="market-dot"></div>
-      <span id="market-label">CHECKING</span>
+      <span id="market-label">CHECKING...</span>
     </div>
+    <div class="market-clock" id="market-clock">Loading time...</div>
     <div class="ws-dot" id="ws-dot" title="WebSocket status"></div>
   </div>
 </nav>
@@ -1284,26 +1980,97 @@
 
   <!-- Hero -->
   <section class="hero">
-    <div class="hero-badge">◈ Pattern Recognition Engine</div>
-    <h1>Institutional-Grade<br /><span class="gradient-blue">Chart Analysis.</span></h1>
-    <p class="hero-sub">Detect 17 chart patterns with regression modeling. Get risk-scored trade plans, automated price feeds, and downloadable reports — in seconds.</p>
-    <div class="hero-ctas">
-      <button class="btn btn-primary" onclick="navigate('screener')">→ Open Live Screener</button>
-      <button class="btn btn-outline" onclick="navigate('manual')">→ Manual Analysis</button>
-    </div>
-    <div class="hero-stats">
-      <span>3 tickers live</span> · <span>5-min refresh</span> · <span>Market hours</span> · <span>PDF reports</span>
+    <div class="hero-shell">
+      <div class="hero-copy reveal">
+        <div class="hero-badge">◈ Pattern Recognition Engine</div>
+        <h1>Institutional-Grade<br /><span class="gradient-blue">Chart Analysis.</span></h1>
+        <p class="hero-sub">Detect 17 chart patterns with regression modeling. Follow sectors, commodities, and broad indexes in one view and turn ideas into risk-scored trade plans in seconds.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary" onclick="navigate('screener')">→ Open Live Screener</button>
+          <button class="btn btn-outline" onclick="navigate('manual')">→ Manual Analysis</button>
+        </div>
+        <div class="hero-meta">
+          <div class="hero-meta-card">
+            <span class="hero-meta-label">Signal density</span>
+            <strong>17 pattern models</strong>
+          </div>
+          <div class="hero-meta-card">
+            <span class="hero-meta-label">Market view</span>
+            <strong>Tech / Energy / Healthcare / Commodities</strong>
+          </div>
+          <div class="hero-meta-card">
+            <span class="hero-meta-label">Delivery</span>
+            <strong>PDF + Excel exports</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual-card reveal">
+        <div class="hero-visual-surface">
+          <div class="hero-status-row">
+            <span class="hero-status-pill">Live market pulse</span>
+            <span class="hero-status-pill hero-status-pill--accent">4 positions monitored</span>
+          </div>
+          <div class="hero-marquee">
+            <div class="hero-marquee-track">
+              <span class="hero-ticker-item up">SPY +0.42%</span>
+              <span class="hero-ticker-item up">QQQ +0.88%</span>
+              <span class="hero-ticker-item down">DIA -0.12%</span>
+              <span class="hero-ticker-item up">XLE +1.03%</span>
+              <span class="hero-ticker-item up">XLK +0.74%</span>
+              <span class="hero-ticker-item up">XLV +0.31%</span>
+              <span class="hero-ticker-item up">SPY +0.42%</span>
+              <span class="hero-ticker-item up">QQQ +0.88%</span>
+              <span class="hero-ticker-item down">DIA -0.12%</span>
+              <span class="hero-ticker-item up">XLE +1.03%</span>
+              <span class="hero-ticker-item up">XLK +0.74%</span>
+              <span class="hero-ticker-item up">XLV +0.31%</span>
+            </div>
+          </div>
+
+          <div class="hero-chart-card">
+            <div class="hero-chart-header">
+              <div>
+                <div class="hero-chart-title">Sector pulse</div>
+                <div class="hero-chart-subtitle">Pick a lens for the market</div>
+              </div>
+              <select id="hero-sector-select" class="hero-chart-select">
+                <option value="tech">Technology</option>
+                <option value="energy">Energy</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="commodities">Commodities</option>
+              </select>
+            </div>
+            <div class="hero-chart-wrap">
+              <canvas id="hero-market-chart"></canvas>
+            </div>
+            <div id="hero-chart-hint" class="hero-chart-hint">Technology leadership remains broad-based as growth names extend their trend.</div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Features -->
-  <section class="features-section">
+  <section class="features-section reveal">
     <div class="container">
-      <div class="section-eyebrow">Capabilities</div>
-      <h2 class="section-heading">Everything you need for technical analysis</h2>
-      <p class="section-sub">Professional-grade tools built for serious traders.</p>
-      <div class="features-grid">
-        <div class="feature-card">
+      <div class="features-layout">
+        <div class="features-intro">
+          <div class="section-eyebrow">Capabilities</div>
+          <h2 class="section-heading">A system engineered for precision under pressure.</h2>
+          <p class="section-sub">Professional-grade tools built for serious traders, exposed through a calmer, more deliberate interface.</p>
+          <div class="feature-rail">
+            <div class="feature-rail-title">Operational depth</div>
+            <p>Every module is designed to shorten the path between signal recognition and decisive action without sacrificing clarity.</p>
+            <div class="feature-rail-list">
+              <span class="feature-pill">Live watchlist</span>
+              <span class="feature-pill">Risk scoring</span>
+              <span class="feature-pill">Report exports</span>
+            </div>
+          </div>
+        </div>
+        <div class="features-grid">
+          <div class="feature-card">
           <div class="feature-icon">⬡</div>
           <div class="feature-title">17 Pattern Engine</div>
           <div class="feature-desc">Ascending triangles, head &amp; shoulders, cup &amp; handle, wedges, flags and 12 more — all detected via regression modeling with confidence scoring.</div>
@@ -1333,21 +2100,25 @@
           <div class="feature-title">Pattern Education</div>
           <div class="feature-desc">Built-in reference guide covering all continuation, reversal, and bilateral patterns with mathematical explanations and historical hit rates.</div>
         </div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- How it works -->
-  <section class="how-section">
+  <section class="how-section reveal">
     <div class="container">
-      <div class="section-eyebrow">Workflow</div>
-      <h2 class="section-heading">How it works</h2>
-      <p class="section-sub">From watchlist to trade plan in under a minute.</p>
-      <div class="steps-row">
+      <div class="how-layout">
+        <div class="how-copy">
+          <div class="section-eyebrow">Workflow</div>
+          <h2 class="section-heading">How it works</h2>
+          <p class="section-sub">From watchlist to trade plan in under a minute.</p>
+        </div>
+        <div class="steps-row">
         <div class="step-item">
           <div class="step-num">01</div>
           <div class="step-title">Add tickers to your watchlist</div>
-          <div class="step-desc">Add up to 3 stock tickers to the live screener. Optionally set a purchase price to track your P&amp;L in real time.</div>
+          <div class="step-desc">Add up to 4 stock tickers to the live screener. Optionally set a purchase price to track your P&amp;L in real time.</div>
         </div>
         <div class="step-item">
           <div class="step-num">02</div>
@@ -1359,11 +2130,12 @@
           <div class="step-title">Act on signals and reports</div>
           <div class="step-desc">Review live signals on the screener, inspect price and indicator charts, and download PDF reports for any ticker at any time.</div>
         </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <footer class="home-footer">
+  <footer class="home-footer reveal">
     <strong style="color:var(--red)">DISCLAIMER:</strong> Stock Pattern Engine provides probabilistic technical analysis only.
     This is <strong style="color:var(--red)">not financial advice</strong>. Past chart patterns do not guarantee future results.
     Always conduct your own research and consult a qualified financial advisor before making investment decisions.<br />
@@ -1403,7 +2175,7 @@
       <button class="btn btn-primary btn-sm" onclick="addTicker()">Add</button>
       <button class="btn btn-ghost btn-sm" onclick="toggleAddForm()">Cancel</button>
     </div>
-    <span class="slots-counter" id="slots-counter">0/3 slots used</span>
+    <span class="slots-counter" id="slots-counter">0/4 slots used</span>
   </div>
 
   <!-- Signal alerts -->
@@ -2522,10 +3294,13 @@
 <script>
 'use strict';
 
-const API = 'http://localhost:8000';
-const WS_URL = 'ws://localhost:8000/ws/live';
+const API = window.location.protocol === 'file:'
+  ? 'http://localhost:8000'
+  : window.location.origin;
+const WS_URL = window.location.protocol === 'file:'
+  ? 'ws://localhost:8000/ws/live'
+  : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}/ws/live`;
 
-let currentPage = 'home';
 let ws = null;
 let wsConnected = false;
 let liveData = {};           // ticker -> result row
@@ -2536,8 +3311,134 @@ let charts = {};             // ticker -> {price, rsi, macd}
 let activeChartTab = {};     // ticker -> 'price'|'rsi'|'macd'
 let editingPnl = null;       // ticker currently being edited
 let addFormOpen = false;
+const heroMarketSeries = {
+  tech: {
+    label: 'Technology',
+    values: [48, 55, 51, 59, 63, 67, 74],
+    color: '#3b82f6',
+    hint: 'Technology leadership is broadening as growth names extend their trend.'
+  },
+  energy: {
+    label: 'Energy',
+    values: [41, 44, 42, 45, 49, 53, 58],
+    color: '#f59e0b',
+    hint: 'Energy is gaining traction as commodity and cyclical momentum improve.'
+  },
+  healthcare: {
+    label: 'Healthcare',
+    values: [37, 39, 41, 40, 45, 47, 50],
+    color: '#10b981',
+    hint: 'Defensive healthcare names are holding up well as investors seek stability.'
+  },
+  commodities: {
+    label: 'Commodities',
+    values: [32, 35, 34, 38, 42, 47, 51],
+    color: '#06b6d4',
+    hint: 'Commodities are benefiting from persistent inflation and supply concerns.'
+  }
+};
+let heroChart = null;
+
+initHeroMarketChart();
+
+function initHeroMarketChart() {
+  const canvas = document.getElementById('hero-market-chart');
+  const select = document.getElementById('hero-sector-select');
+  const hint = document.getElementById('hero-chart-hint');
+  if (!canvas || !select || !hint) return;
+
+  const drawChart = (key) => {
+    const item = heroMarketSeries[key] || heroMarketSeries.tech;
+    const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const values = item.values;
+
+    if (heroChart) {
+      heroChart.data.labels = labels;
+      heroChart.data.datasets[0].data = values;
+      heroChart.data.datasets[0].borderColor = item.color;
+      heroChart.data.datasets[0].backgroundColor = item.color.replace(')', ', 0.16)').replace('rgb', 'rgba');
+      heroChart.update();
+    } else {
+      heroChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: values,
+            borderColor: item.color,
+            backgroundColor: item.color.replace(')', ', 0.16)').replace('rgb', 'rgba'),
+            fill: true,
+            tension: 0.35,
+            borderWidth: 2.5,
+            pointRadius: 0,
+            pointHoverRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 600 },
+          plugins: {
+            legend: { display: false },
+            tooltip: { backgroundColor: '#111827', titleColor: '#f8fafc', bodyColor: '#f8fafc', borderColor: 'rgba(148,163,184,0.2)', borderWidth: 1 }
+          },
+          scales: {
+            x: { display: false },
+            y: { display: false }
+          }
+        }
+      });
+    }
+
+    hint.textContent = item.hint;
+  };
+
+  select.addEventListener('change', (e) => drawChart(e.target.value));
+  drawChart(select.value || 'tech');
+}
+
+// ─── UI motion ───────────────────────────────────────────────────────────────
+
+function revealOnScroll() {
+  document.querySelectorAll('.reveal').forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 120) {
+      el.classList.add('visible');
+    }
+  });
+}
+
+window.addEventListener('scroll', revealOnScroll, { passive: true });
+window.addEventListener('load', revealOnScroll);
 
 // ─── Router ───────────────────────────────────────────────────────────────────
+
+function bindHeroParallax() {
+  const shell = document.querySelector('.hero-shell');
+  const copy = document.querySelector('.hero-copy');
+  const card = document.querySelector('.hero-visual-card');
+  if (!shell || !copy || !card) return;
+
+  const reset = () => {
+    copy.style.transform = 'translate3d(0,0,0)';
+    card.style.transform = 'translate3d(0,0,0) rotateX(0deg) rotateY(0deg)';
+  };
+
+  shell.addEventListener('pointermove', (event) => {
+    const rect = shell.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width - 0.5;
+    const y = (event.clientY - rect.top) / rect.height - 0.5;
+    copy.style.transform = `translate3d(${x * 6}px, ${y * 6}px, 0)`;
+    card.style.transform = `translate3d(${x * 8}px, ${y * 10}px, 0) rotateX(${y * -5}deg) rotateY(${x * 5}deg)`;
+  });
+
+  shell.addEventListener('pointerleave', reset);
+}
+
+window.addEventListener('load', () => {
+  revealOnScroll();
+  bindHeroParallax();
+});
 
 function navigate(page) {
   document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
@@ -2554,7 +3455,7 @@ function navigate(page) {
 
 // ─── Market status ────────────────────────────────────────────────────────────
 
-function updateMarketStatus(isOpen) {
+function updateMarketStatus(isOpen, reason = '') {
   const dot   = document.getElementById('market-dot');
   const label = document.getElementById('market-label');
   if (isOpen) {
@@ -2566,17 +3467,163 @@ function updateMarketStatus(isOpen) {
     label.textContent = 'MARKET CLOSED';
     label.style.color = 'var(--muted)';
   }
+  if (reason) {
+    label.title = reason;
+  }
 }
 
-// Bootstrap market status on load
-(async function checkMarket() {
+function updateMarketClock() {
+  const clock = document.getElementById('market-clock');
+  if (!clock) return;
+  const ny = getEasternDateTime();
+  const time = [ny.hour, ny.minute, ny.second]
+    .map(v => String(v).padStart(2, '0'))
+    .join(':');
+  const dateText = new Date(Date.UTC(ny.year, ny.month - 1, ny.day)).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+  clock.textContent = `${dateText} · ${time} ET`;
+}
+
+function getEasternDateTime() {
+  const [datePart, timePart] = new Date().toLocaleString('en-US', {
+    timeZone: 'America/New_York',
+    hour12: false,
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  }).split(', ');
+  const [month, day, year] = datePart.split('/').map(Number);
+  const [hour, minute, second] = timePart.split(':').map(Number);
+  const easternDate = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  const weekday = easternDate.getUTCDay();
+  return { year, month, day, hour, minute, second, weekday };
+}
+
+function nthWeekdayOfMonth(year, month, weekday, n) {
+  const firstDay = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
+  const delta = (weekday - firstDay + 7) % 7;
+  return 1 + delta + (n - 1) * 7;
+}
+
+function lastWeekdayOfMonth(year, month, weekday) {
+  const lastDay = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  for (let day = lastDay; day > 0; day--) {
+    const d = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+    if (d === weekday) return day;
+  }
+  return 1;
+}
+
+function getEasterSunday(year) {
+  const a = year % 19;
+  const b = Math.floor(year / 100);
+  const c = year % 100;
+  const d = Math.floor(b / 4);
+  const e = b % 4;
+  const f = Math.floor((b + 8) / 25);
+  const g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30;
+  const i = Math.floor(c / 4);
+  const k = c % 4;
+  const l = (32 + 2 * e + 2 * i - h - k) % 7;
+  const m = Math.floor((a + 11 * h + 22 * l) / 451);
+  const month = Math.floor((h + l - 7 * m + 114) / 31);
+  const day = ((h + l - 7 * m + 114) % 31) + 1;
+  return { year, month, day };
+}
+
+function isSameDate(a, b) {
+  return a.year === b.year && a.month === b.month && a.day === b.day;
+}
+
+function getUsMarketHolidays(year) {
+  const holidays = [];
+  const add = (mon, day, observed = true) => {
+    const holiday = { year, month: mon, day };
+    if (!observed) {
+      holidays.push(holiday);
+      return;
+    }
+    const dt = new Date(Date.UTC(year, mon - 1, day));
+    const weekday = dt.getUTCDay();
+    if (weekday === 6) {
+      holidays.push({ year, month: mon, day: day - 1 });
+    } else if (weekday === 0) {
+      holidays.push({ year, month: mon, day: day + 1 });
+    } else {
+      holidays.push(holiday);
+    }
+  };
+  add(1, 1); // New Year's Day
+  holidays.push({ year, month: 1, day: nthWeekdayOfMonth(year, 1, 1, 3) }); // MLK Day
+  holidays.push({ year, month: 2, day: nthWeekdayOfMonth(year, 2, 1, 3) }); // Presidents' Day
+  const easter = getEasterSunday(year);
+  const goodFriday = new Date(Date.UTC(year, easter.month - 1, easter.day - 2));
+  holidays.push({ year, month: goodFriday.getUTCMonth() + 1, day: goodFriday.getUTCDate() });
+  holidays.push({ year, month: 5, day: lastWeekdayOfMonth(year, 5, 1) }); // Memorial Day
+  add(6, 19); // Juneteenth
+  add(7, 4); // Independence Day
+  holidays.push({ year, month: 9, day: nthWeekdayOfMonth(year, 9, 1, 1) }); // Labor Day
+  holidays.push({ year, month: 11, day: nthWeekdayOfMonth(year, 11, 4, 4) }); // Thanksgiving
+  add(12, 25); // Christmas Day
+  return holidays;
+}
+
+function isUsMarketHoliday(year, month, day) {
+  return getUsMarketHolidays(year).some(h => h.year === year && h.month === month && h.day === day);
+}
+
+function computeLocalMarketStatus() {
+  const ny = getEasternDateTime();
+  const isWeekend = ny.weekday === 0 || ny.weekday === 6;
+  if (isWeekend) {
+    return { isOpen: false, reason: 'Weekend' };
+  }
+  if (isUsMarketHoliday(ny.year, ny.month, ny.day)) {
+    return { isOpen: false, reason: 'US market holiday' };
+  }
+  const currentSeconds = ny.hour * 3600 + ny.minute * 60 + ny.second;
+  const openSeconds = 9 * 3600 + 30 * 60;
+  const closeSeconds = 16 * 3600;
+  if (currentSeconds < openSeconds) {
+    return { isOpen: false, reason: 'Before market open (9:30 AM ET)' };
+  }
+  if (currentSeconds >= closeSeconds) {
+    return { isOpen: false, reason: 'After market close (4:00 PM ET)' };
+  }
+  return { isOpen: true, reason: '' };
+}
+
+async function refreshMarketStatus() {
+  const localStatus = computeLocalMarketStatus();
+  updateMarketStatus(localStatus.isOpen, localStatus.reason);
   try {
     const r = await fetch(API + '/api/v1/watchlist');
-    if (r.ok) {
-      const d = await r.json();
-      updateMarketStatus(d.market_open || false);
+    if (!r.ok) throw new Error('status fetch failed');
+    const d = await r.json();
+    updateMarketStatus(d.market_open || false, d.market_open ? '' : 'Closed by server');
+    const label = document.getElementById('market-label');
+    if (d.last_updated) {
+      label.title = `Last refresh: ${new Date(d.last_updated).toLocaleString('en-US')}`;
     }
-  } catch(e) {}
+  } catch (e) {
+    console.warn('[Market] status refresh failed, using local schedule', e);
+  }
+}
+
+(function initMarketClock() {
+  updateMarketClock();
+  setInterval(() => updateMarketClock(), 1000);
+  refreshMarketStatus();
+  setInterval(() => refreshMarketStatus(), 60000);
 })();
 
 // ─── WebSocket ────────────────────────────────────────────────────────────────
@@ -2642,7 +3689,9 @@ function setLiveBadge(connected) {
 // ─── Live data handler ────────────────────────────────────────────────────────
 
 function onLiveData(payload) {
-  updateMarketStatus(payload.market_open || false);
+  if (payload.market_open !== undefined) {
+    updateMarketStatus(payload.market_open, payload.market_open ? '' : 'Closed by server');
+  }
 
   const ts = payload.timestamp
     ? new Date(payload.timestamp).toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', second:'2-digit'})
@@ -3120,14 +4169,16 @@ async function loadWatchlist() {
     const r = await fetch(API + '/api/v1/watchlist');
     if (!r.ok) return;
     const d = await r.json();
-    updateMarketStatus(d.market_open || false);
+    if (d.market_open !== undefined) {
+      updateMarketStatus(d.market_open, d.market_open ? '' : 'Closed by server');
+    }
 
     watchlistMeta = {};
     (d.tickers || []).forEach(t => {
       watchlistMeta[t.ticker] = { purchase_price: t.purchase_price };
     });
 
-    renderWatchlistChips(d.tickers || [], d.count || 0, d.max || 3);
+    renderWatchlistChips(d.tickers || [], d.count || 0, d.max || 4);
 
     // Populate liveData from REST if WS hasn't fired yet
     (d.tickers || []).forEach(t => {
@@ -3650,12 +4701,44 @@ function accToggle(header) {
   card.classList.toggle('open');
 }
 
+function renderPatternPreviews() {
+  const patternSvgs = {
+    'Ascending Triangle': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><line x1="15" y1="52" x2="95" y2="52" class="pattern-guide"/><line x1="35" y1="18" x2="95" y2="18" class="pattern-guide"/><path d="M15 50 L33 44 L47 32 L58 36 L70 24 L82 24 L95 22"/></svg>`,
+    'Descending Triangle': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><line x1="15" y1="16" x2="95" y2="36" class="pattern-guide"/><line x1="18" y1="52" x2="95" y2="52" class="pattern-guide"/><path d="M15 18 L30 20 L42 28 L53 36 L65 36 L76 44 L88 52"/></svg>`,
+    'Symmetrical Triangle': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="18" x2="95" y2="32" class="pattern-guide"/><line x1="18" y1="52" x2="95" y2="30" class="pattern-guide"/><path d="M15 50 L28 42 L40 34 L52 38 L64 32 L76 28 L88 26 L95 24"/></svg>`,
+    'Bull Flag': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 50 L25 40 L35 32 L45 22"/><path d="M45 22 L55 24 L65 28 L75 30 L85 30 L95 28" class="pattern-guide"/></svg>`,
+    'Bear Flag': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 18 L25 28 L35 36 L45 44"/><path d="M45 44 L55 42 L65 38 L75 36 L85 34 L95 32" class="pattern-guide"/></svg>`,
+    'Pennant': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 50 L25 40 L35 30 L45 22"/><line x1="45" y1="22" x2="95" y2="36" class="pattern-guide"/><line x1="45" y1="50" x2="95" y2="30" class="pattern-guide"/><path d="M45 22 L55 28 L65 30 L75 32 L85 33 L95 34"/></svg>`,
+    'Head & Shoulders': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 48 L28 34 L40 44 L55 22 L70 44 L82 34 L95 48"/><line x1="22" y1="46" x2="90" y2="46" class="pattern-guide"/></svg>`,
+    'Inverse Head & Shoulders': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 16 L28 30 L40 20 L55 42 L70 20 L82 30 L95 16"/><line x1="22" y1="18" x2="90" y2="18" class="pattern-guide"/></svg>`,
+    'Double Top / Double Bottom': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 46 L28 30 L40 38 L55 22 L70 34 L82 28 L95 44"/><path d="M15 24 L28 38 L40 30 L55 46 L70 34 L82 40 L95 24" class="pattern-guide"/></svg>`,
+    'Cup & Handle': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><path d="M15 34 C25 34 30 52 45 52 C60 52 65 34 75 34 C85 34 90 40 95 40"/><path d="M75 34 L82 34 L90 32 L95 30" class="pattern-guide"/></svg>`,
+    'Rising Wedge / Falling Wedge': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><line x1="15" y1="50" x2="95" y2="30" class="pattern-guide"/><line x1="15" y1="20" x2="95" y2="34" class="pattern-guide"/><path d="M15 50 L30 42 L45 36 L60 30 L75 32 L88 28"/></svg>`,
+    'Rectangle / Channel': `<svg viewBox="0 0 120 64" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="20" x2="102" y2="20" class="pattern-guide"/><line x1="18" y1="46" x2="102" y2="46" class="pattern-guide"/><path d="M18 34 L30 24 L42 24 L54 44 L66 44 L78 28 L90 28 L102 38"/></svg>`
+  };
+
+  document.querySelectorAll('.acc-card').forEach(card => {
+    const title = card.querySelector('.acc-title')?.textContent.trim();
+    const previewSvg = patternSvgs[title];
+    if (!previewSvg) return;
+
+    const previewWrap = document.createElement('div');
+    previewWrap.className = 'acc-preview';
+    previewWrap.innerHTML = previewSvg;
+
+    const header = card.querySelector('.acc-header');
+    const chevron = header.querySelector('.acc-chevron');
+    if (header && chevron) header.insertBefore(previewWrap, chevron);
+  });
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 // Navigate based on URL hash on load
 (function init() {
   const hash = window.location.hash.replace('#','');
   if (hash === 'screener' || hash === 'manual' || hash === 'learn') navigate(hash);
+  renderPatternPreviews();
 })();
 </script>
 </body>

@@ -2,7 +2,7 @@
 Watchlist REST endpoints.
 
 GET  /api/v1/watchlist            — list tickers + live data
-POST /api/v1/watchlist/add        — add a ticker (max 3)
+POST /api/v1/watchlist/add        — add a ticker (max 4)
 POST /api/v1/watchlist/remove     — remove a ticker
 POST /api/v1/watchlist/purchase_price — set purchase price
 POST /api/v1/watchlist/refresh    — trigger immediate refresh
@@ -52,7 +52,7 @@ async def get_watchlist():
             for t, info in data.items()
         ],
         "count":        len(data),
-        "max":          3,
+        "max":          4,
         "last_updated": last.get("timestamp"),
         "market_open":  last.get("market_open", False),
     }
