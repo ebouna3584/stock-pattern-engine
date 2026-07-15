@@ -1,6 +1,7 @@
 """
 WebSocket endpoint — pushes live screener data to all connected browser clients.
 """
+import asyncio
 import logging
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -41,11 +42,21 @@ manager = ConnectionManager()
 async def websocket_live(websocket: WebSocket):
     await manager.connect(websocket)
     try:
-        # Send latest cached data immediately on connect
-        from scheduler.price_fetcher import get_last_payload
+        from scheduler.price_fetcher import get_last_payload, run_full_refresh
+        from live.watchlist import get_tickers
+
         last = get_last_payload()
         if last:
+            # Send cached data immediately
             await websocket.send_json(last)
+        else:
+            # Cold start — fetch now in a thread so we don't block the event loop
+            tickers = get_tickers()
+            if tickers:
+                loop = asyncio.get_event_loop()
+                payload = await loop.run_in_executor(None, run_full_refresh, tickers)
+                await manager.broadcast(payload)
+
         # Keep alive — browser sends periodic pings
         while True:
             await websocket.receive_text()

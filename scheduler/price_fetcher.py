@@ -47,6 +47,13 @@ def _atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return tr.rolling(period, min_periods=1).mean().round(2)
 
 
+def _clean_list(series: pd.Series) -> list:
+    """NaN/Inf aren't valid JSON — the first RSI/MACD rows are always NaN
+    before their rolling windows fill, and that alone crashed every refresh
+    with a 500 since Starlette's JSONResponse rejects NaN outright."""
+    return [None if pd.isna(v) or np.isinf(v) else v for v in series.tolist()]
+
+
 # ── Yahoo Finance fetchers ─────────────────────────────────────────────────────
 
 def fetch_history(
@@ -201,15 +208,15 @@ def run_full_refresh(tickers: list) -> dict:
             chart = df.tail(60)
             row["chart"] = {
                 "dates":   chart["date"].tolist(),
-                "closes":  chart["close"].round(2).tolist(),
-                "highs":   chart["high"].round(2).tolist(),
-                "lows":    chart["low"].round(2).tolist(),
+                "closes":  _clean_list(chart["close"].round(2)),
+                "highs":   _clean_list(chart["high"].round(2)),
+                "lows":    _clean_list(chart["low"].round(2)),
                 "volumes": chart["volume"].fillna(0).astype(int).tolist(),
-                "rsi":     chart["RSI"].round(1).tolist() if "RSI" in chart else [],
-                "macd":    chart["MACD"].round(4).tolist() if "MACD" in chart else [],
-                "macd_signal": chart["MACD_signal"].round(4).tolist()
+                "rsi":     _clean_list(chart["RSI"].round(1)) if "RSI" in chart else [],
+                "macd":    _clean_list(chart["MACD"].round(4)) if "MACD" in chart else [],
+                "macd_signal": _clean_list(chart["MACD_signal"].round(4))
                                if "MACD_signal" in chart else [],
-                "ema20":   chart["EMA_20"].round(2).tolist() if "EMA_20" in chart else [],
+                "ema20":   _clean_list(chart["EMA_20"].round(2)) if "EMA_20" in chart else [],
             }
 
             # Support / resistance levels for chart overlay

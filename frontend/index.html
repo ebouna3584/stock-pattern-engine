@@ -1159,6 +1159,41 @@
       height: 220px;
     }
     .chart-body canvas { max-height: 200px; }
+    .chart-body.ai-mode { height: auto; max-height: 420px; overflow-y: auto; }
+
+    /* AI insight panel */
+    .ai-panel { font-size: 12.5px; color: var(--dim); }
+    .ai-panel-empty {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.6rem; height: 200px; text-align: center;
+    }
+    .ai-panel-empty .btn { margin-top: 0.25rem; }
+    .ai-thesis {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.75rem 0.9rem; color: var(--text); line-height: 1.5; margin-bottom: 0.75rem;
+    }
+    .ai-conflict-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.04em; text-transform: uppercase; color: var(--red);
+      background: var(--red-dim); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px;
+      padding: 0.25rem 0.5rem; margin-bottom: 0.75rem;
+    }
+    .ai-articles { display: flex; flex-direction: column; gap: 0.5rem; }
+    .ai-article {
+      border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem 0.65rem;
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .ai-article a { color: var(--text); font-weight: 600; font-size: 12px; text-decoration: none; }
+    .ai-article a:hover { color: var(--blue); }
+    .ai-article-meta { display: flex; align-items: center; gap: 0.4rem; font-size: 10.5px; color: var(--muted); }
+    .ai-sentiment { font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: 10px; }
+    .ai-sentiment.bullish { color: var(--green); }
+    .ai-sentiment.bearish { color: var(--red); }
+    .ai-sentiment.neutral { color: var(--muted); }
+    .ai-article-why { font-size: 11.5px; color: var(--dim); }
+    .ai-disclaimer { font-size: 10px; color: var(--muted); margin-top: 0.75rem; font-style: italic; }
+    .ai-refresh-row { display: flex; justify-content: flex-end; margin-bottom: 0.5rem; }
+    .ai-refresh-row .btn { font-size: 11px; padding: 0.25rem 0.6rem; }
 
     /* Signal alerts strip */
     .alerts-strip {
@@ -3294,12 +3329,12 @@
 <script>
 'use strict';
 
-const API = window.location.protocol === 'file:'
-  ? 'http://localhost:8000'
-  : window.location.origin;
-const WS_URL = window.location.protocol === 'file:'
-  ? 'ws://localhost:8000/ws/live'
-  : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}${window.location.port ? `:${window.location.port}` : ''}/ws/live`;
+const _origin = window.location.origin;
+const _isLocal = window.location.protocol === 'file:' || !_origin || _origin === 'null';
+const API    = _isLocal ? 'http://localhost:8000' : _origin;
+const WS_URL = _isLocal
+  ? 'ws://localhost:8000/api/v1/ws/live'
+  : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/v1/ws/live`;
 
 let ws = null;
 let wsConnected = false;
@@ -3956,11 +3991,13 @@ function createChartCard(r) {
       <button class="chart-tab active" onclick="switchTab('${r.ticker}','price',this)">Price</button>
       <button class="chart-tab" onclick="switchTab('${r.ticker}','rsi',this)">RSI</button>
       <button class="chart-tab" onclick="switchTab('${r.ticker}','macd',this)">MACD</button>
+      <button class="chart-tab" onclick="switchTab('${r.ticker}','ai',this)">✨ AI Insight</button>
     </div>
     <div class="chart-body" id="cb-${r.ticker}">
       <canvas id="chart-price-${r.ticker}"></canvas>
       <canvas id="chart-rsi-${r.ticker}" style="display:none;"></canvas>
       <canvas id="chart-macd-${r.ticker}" style="display:none;"></canvas>
+      <div class="ai-panel" id="chart-ai-${r.ticker}" style="display:none;"></div>
     </div>
   `;
   return card;
@@ -3970,9 +4007,90 @@ function switchTab(ticker, tab, btn) {
   activeChartTab[ticker] = tab;
   const body = document.getElementById('cb-' + ticker);
   body.querySelectorAll('canvas').forEach(c => c.style.display = 'none');
+  body.querySelectorAll('.ai-panel').forEach(el => el.style.display = 'none');
   body.querySelectorAll('.chart-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('chart-' + tab + '-' + ticker).style.display = '';
+  body.classList.toggle('ai-mode', tab === 'ai');
+
+  if (tab === 'ai') {
+    document.getElementById('chart-ai-' + ticker).style.display = '';
+    loadAiInsight(ticker, false);
+  } else {
+    document.getElementById('chart-' + tab + '-' + ticker).style.display = '';
+  }
   btn.classList.add('active');
+}
+
+// ─── AI Insight (on-demand, cached server-side) ───────────────────────────────
+
+const aiInsightCache = {}; // ticker -> insight payload, client-side session cache
+
+async function loadAiInsight(ticker, forceRefresh) {
+  const panel = document.getElementById('chart-ai-' + ticker);
+  if (!panel) return;
+
+  if (!forceRefresh && aiInsightCache[ticker]) {
+    renderAiInsight(ticker, aiInsightCache[ticker]);
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="ai-panel-empty">
+      <div class="spinner"></div>
+      <div>Synthesizing technicals + news for ${ticker}…</div>
+    </div>`;
+
+  try {
+    const resp = await fetch(API + '/api/v1/ai/insight', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ticker, force_refresh: !!forceRefresh }),
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || `Request failed (${resp.status})`);
+    }
+    const data = await resp.json();
+    aiInsightCache[ticker] = data;
+    renderAiInsight(ticker, data);
+  } catch (e) {
+    panel.innerHTML = `<div class="ai-panel-empty"><div>Couldn't load AI insight: ${e.message}</div></div>`;
+  }
+}
+
+function renderAiInsight(ticker, data) {
+  const panel = document.getElementById('chart-ai-' + ticker);
+  if (!panel) return;
+
+  const thesisHtml = data.thesis
+    ? `<div class="ai-thesis">${data.thesis}</div>`
+    : `<div class="ai-thesis">Set ANTHROPIC_API_KEY in .env to enable AI trade-thesis synthesis. Showing curated news only.</div>`;
+
+  const conflictHtml = data.conflict_flag
+    ? `<div class="ai-conflict-badge">⚠ Signal / news sentiment conflict</div>`
+    : '';
+
+  const articlesHtml = (data.articles || []).length
+    ? `<div class="ai-articles">${data.articles.map(a => `
+        <div class="ai-article">
+          <a href="${a.url || '#'}" target="_blank" rel="noopener">${a.title}</a>
+          <div class="ai-article-meta">
+            <span>${a.source || 'Unknown source'}</span>
+            ${a.sentiment ? `<span class="ai-sentiment ${a.sentiment}">${a.sentiment}</span>` : ''}
+          </div>
+          ${a.why_it_matters ? `<div class="ai-article-why">${a.why_it_matters}</div>` : ''}
+        </div>
+      `).join('')}</div>`
+    : `<div class="ai-panel-empty">No recent articles found for ${ticker}.</div>`;
+
+  panel.innerHTML = `
+    <div class="ai-refresh-row">
+      <button class="btn btn-ghost btn-sm" onclick="loadAiInsight('${ticker}', true)" title="Regenerate now (bypasses cache)">↻ Refresh</button>
+    </div>
+    ${conflictHtml}
+    ${thesisHtml}
+    ${articlesHtml}
+    <div class="ai-disclaimer">${data.disclaimer || ''}</div>
+  `;
 }
 
 const CHART_DEFAULTS = {

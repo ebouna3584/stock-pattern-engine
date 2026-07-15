@@ -16,14 +16,18 @@ logging.basicConfig(
 _frontend = Path(__file__).parent.parent / "frontend"
 
 
+IS_VERCEL = os.getenv("VERCEL") is not None
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Vercel serverless functions should not start long-running background jobs.
-    if os.getenv("VERCEL") is None:
+    # Vercel serverless functions can't host long-running background jobs
+    # or persistent WebSocket connections — only start these off-Vercel.
+    if not IS_VERCEL:
         from scheduler.job_manager import start_scheduler
         start_scheduler()
     yield
-    if os.getenv("VERCEL") is None:
+    if not IS_VERCEL:
         from scheduler.job_manager import stop_scheduler
         stop_scheduler()
 
@@ -45,7 +49,7 @@ app.add_middleware(
 
 # Register all API routes at import time so FastAPI builds the routing table
 from api.endpoints import upload, analyze, report, template
-from api.endpoints import watchlist, ws, quick_analyze
+from api.endpoints import watchlist, quick_analyze, ai_insights
 from fastapi import APIRouter
 
 api_router = APIRouter()
@@ -55,19 +59,23 @@ api_router.include_router(analyze.router,       tags=["Analysis"])
 api_router.include_router(quick_analyze.router, tags=["Quick Analyze"])
 api_router.include_router(report.router,        tags=["Reports"])
 api_router.include_router(watchlist.router,     tags=["Watchlist"])
-api_router.include_router(ws.router,            tags=["Live"])
+api_router.include_router(ai_insights.router,   tags=["AI Insights"])
+
+# WebSocket + scheduled refresh require a persistent process — not available on Vercel
+if not IS_VERCEL:
+    from api.endpoints import ws
+    api_router.include_router(ws.router, tags=["Live"])
 
 app.include_router(api_router, prefix="/api/v1")
 
 
 @app.get("/health")
 async def health():
-    from scheduler.price_fetcher import is_market_open
-    return {
-        "status":      "ok",
-        "version":     settings.APP_VERSION,
-        "market_open": is_market_open(),
-    }
+    payload = {"status": "ok", "version": settings.APP_VERSION}
+    if not IS_VERCEL:
+        from scheduler.price_fetcher import is_market_open
+        payload["market_open"] = is_market_open()
+    return payload
 
 
 @app.get("/", response_class=FileResponse)

@@ -1,11 +1,17 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from typing import List
+from typing import List, Optional
 
 
 class Settings(BaseSettings):
     APP_NAME: str = "Stock Pattern Engine"
     APP_VERSION: str = "1.0.0-mvp"
     DEBUG: bool = False
+
+    # AI insights — on-demand trade thesis synthesis + news curation.
+    # Left unset, the AI insight endpoint degrades gracefully (articles only, no thesis).
+    ANTHROPIC_API_KEY: Optional[str] = None
+    NEWS_API_KEY: Optional[str] = None
+    AI_INSIGHT_CACHE_TTL_SEC: int = 1200  # 20 min — controls Anthropic/NewsAPI spend
 
     # Upload constraints
     MAX_UPLOAD_SIZE_MB: int = 10
