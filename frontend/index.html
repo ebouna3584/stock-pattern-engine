@@ -1981,6 +1981,74 @@
       background: rgba(255,255,255,0.02);
       backdrop-filter: blur(10px);
     }
+
+    /* ─── Auth gate ───────────────────────────────────────────────────── */
+    .user-pill {
+      display: flex; align-items: center; gap: 0.6rem;
+      font-size: 12px; color: var(--dim);
+    }
+    .auth-gate {
+      display: none;
+      position: fixed; inset: 0; z-index: 2000;
+      align-items: center; justify-content: center;
+      background: var(--bg, #0b1220);
+    }
+    .auth-card {
+      width: 340px; max-width: 90vw;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 14px;
+      padding: 2rem 1.75rem; text-align: center;
+    }
+    .auth-logo { font-size: 1.4rem; font-weight: 800; color: var(--blue); margin-bottom: 0.5rem; }
+    .auth-title { font-size: 1.1rem; margin-bottom: 1rem; color: var(--text); }
+    .auth-form { display: flex; flex-direction: column; gap: 0.65rem; }
+    .auth-input {
+      background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.6rem 0.8rem; color: var(--text); font-size: 13px; font-family: inherit;
+    }
+    .auth-input:focus { outline: none; border-color: var(--blue); }
+    .auth-submit { margin-top: 0.25rem; width: 100%; }
+    .auth-toggle { margin-top: 1rem; font-size: 12px; color: var(--muted); }
+    .auth-toggle a { color: var(--blue); text-decoration: none; }
+    .auth-error {
+      background: var(--red-dim); border: 1px solid rgba(239,68,68,0.3); color: var(--red);
+      border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 12px; margin-bottom: 0.75rem;
+    }
+    .auth-msg {
+      background: var(--green-dim); border: 1px solid rgba(16,185,129,0.3); color: var(--green);
+      border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 12px; margin-bottom: 0.75rem;
+    }
+
+    /* ─── Admin newsletter ────────────────────────────────────────────── */
+    #page-admin { padding: 2rem; max-width: 900px; margin: 0 auto; }
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .nl-draft-row {
+      display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.65rem 1rem; margin-bottom: 0.5rem; font-size: 13px;
+    }
+    .nl-draft-row:hover { border-color: var(--blue); }
+    .nl-status {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      padding: 0.15rem 0.5rem; border-radius: 5px;
+    }
+    .nl-status.draft    { background: rgba(148,163,184,0.15); color: var(--muted); }
+    .nl-status.approved { background: var(--green-dim); color: var(--green); }
+    .nl-status.sent      { background: rgba(59,130,246,0.15); color: var(--blue); }
+    #newsletter-editor { margin-top: 1.5rem; }
+    #nl-subject {
+      width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.6rem 0.8rem; color: var(--text); font-size: 13px; font-family: inherit;
+      margin-bottom: 0.75rem;
+    }
+    #nl-content {
+      width: 100%; min-height: 320px; background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 0.75rem; color: var(--text); font-size: 12px;
+      font-family: var(--font-mono); resize: vertical;
+    }
+    .nl-actions { display: flex; gap: 0.6rem; margin-top: 0.75rem; }
   </style>
 </head>
 <body>
@@ -1998,6 +2066,7 @@
     <button class="nav-link" onclick="navigate('screener')" id="nav-screener">Live Screener</button>
     <button class="nav-link" onclick="navigate('manual')" id="nav-manual">Manual Analysis</button>
     <button class="nav-link" onclick="navigate('learn')" id="nav-learn">Learn</button>
+    <button class="nav-link" onclick="navigate('admin')" id="nav-admin" style="display:none;">Admin</button>
   </div>
 
   <div class="navbar-right">
@@ -2007,8 +2076,39 @@
     </div>
     <div class="market-clock" id="market-clock">Loading time...</div>
     <div class="ws-dot" id="ws-dot" title="WebSocket status"></div>
+    <div class="user-pill" id="user-pill" style="display:none;">
+      <span id="user-email-label"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Log out</button>
+    </div>
   </div>
 </nav>
+
+<!-- ═══════════════════════════════════════ AUTH GATE ═══════════════════════════════════════ -->
+<div id="auth-gate" class="auth-gate">
+  <div class="auth-card">
+    <div class="auth-logo">◈ SPE</div>
+    <h2 class="auth-title" id="auth-title">Log In</h2>
+    <div class="auth-error" id="auth-error" style="display:none;"></div>
+    <div class="auth-msg" id="auth-msg" style="display:none;"></div>
+
+    <form id="auth-form-login" class="auth-form" onsubmit="return handleLogin(event)">
+      <input type="email" id="login-email" class="auth-input" placeholder="Email" required autocomplete="email" />
+      <input type="password" id="login-password" class="auth-input" placeholder="Password" required autocomplete="current-password" />
+      <button type="submit" class="btn btn-primary auth-submit">Log In</button>
+    </form>
+
+    <form id="auth-form-signup" class="auth-form" style="display:none;" onsubmit="return handleSignup(event)">
+      <input type="email" id="signup-email" class="auth-input" placeholder="Email" required autocomplete="email" />
+      <input type="password" id="signup-password" class="auth-input" placeholder="Password (min 8 characters)" required minlength="8" autocomplete="new-password" />
+      <button type="submit" class="btn btn-primary auth-submit">Sign Up</button>
+    </form>
+
+    <div class="auth-toggle">
+      <span id="auth-toggle-login-text">Don't have an account? <a href="#" onclick="return showSignup()">Sign up</a></span>
+      <span id="auth-toggle-signup-text" style="display:none;">Already have an account? <a href="#" onclick="return showLogin()">Log in</a></span>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════ PAGE: HOME ═══════════════════════════════════════ -->
 <div id="page-home" class="page active">
@@ -3325,6 +3425,30 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════ PAGE: ADMIN NEWSLETTER ═══════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <div class="admin-header">
+    <div>
+      <h1 style="font-size:1.4rem;margin-bottom:0.25rem;">Newsletter Admin</h1>
+      <p style="color:var(--muted);font-size:12.5px;">
+        AI drafts a weekly market recap. Nothing sends until you approve it here.
+      </p>
+    </div>
+    <button class="btn btn-primary" onclick="generateNewsletterDraft()">✨ Generate New Draft</button>
+  </div>
+
+  <div id="newsletter-drafts-list"></div>
+
+  <div id="newsletter-editor" style="display:none;">
+    <input id="nl-subject" placeholder="Subject" />
+    <textarea id="nl-content" placeholder="HTML content"></textarea>
+    <div class="nl-actions">
+      <button class="btn btn-ghost" onclick="saveNewsletterEdit()">Save Changes</button>
+      <button class="btn btn-primary" id="nl-send-btn" onclick="approveAndSendNewsletter()">Approve &amp; Send to All Subscribers</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════ JAVASCRIPT ═══════════════════════════════════════ -->
 <script>
 'use strict';
@@ -3473,6 +3597,7 @@ function bindHeroParallax() {
 window.addEventListener('load', () => {
   revealOnScroll();
   bindHeroParallax();
+  checkAuth();
 });
 
 function navigate(page) {
@@ -3485,6 +3610,214 @@ function navigate(page) {
   if (page === 'screener') {
     if (!ws || ws.readyState > 1) connectWS();
     loadWatchlist();
+  }
+  if (page === 'admin') {
+    loadNewsletterDrafts();
+  }
+}
+
+// ─── Auth ──────────────────────────────────────────────────────────────────
+
+let currentUser = null;
+
+async function checkAuth() {
+  try {
+    const r = await fetch(API + '/api/v1/auth/me', { credentials: 'include' });
+    if (r.ok) {
+      currentUser = await r.json();
+      onAuthenticated();
+    } else {
+      showAuthGate();
+    }
+  } catch (e) {
+    showAuthGate();
+  }
+}
+
+function showAuthGate() {
+  document.getElementById('auth-gate').style.display = 'flex';
+  document.getElementById('user-pill').style.display = 'none';
+  if (new URLSearchParams(location.search).get('verified') === '1') {
+    const el = document.getElementById('auth-msg');
+    el.textContent = 'Email verified — you can log in now.';
+    el.style.display = '';
+  }
+}
+
+function onAuthenticated() {
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('user-pill').style.display = 'flex';
+  document.getElementById('user-email-label').textContent = currentUser.email;
+  document.getElementById('nav-admin').style.display = currentUser.is_admin ? '' : 'none';
+}
+
+function clearAuthMessages() {
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-msg').style.display = 'none';
+}
+
+function showSignup() {
+  document.getElementById('auth-form-login').style.display = 'none';
+  document.getElementById('auth-form-signup').style.display = '';
+  document.getElementById('auth-toggle-login-text').style.display = 'none';
+  document.getElementById('auth-toggle-signup-text').style.display = '';
+  document.getElementById('auth-title').textContent = 'Sign Up';
+  clearAuthMessages();
+  return false;
+}
+
+function showLogin() {
+  document.getElementById('auth-form-signup').style.display = 'none';
+  document.getElementById('auth-form-login').style.display = '';
+  document.getElementById('auth-toggle-signup-text').style.display = 'none';
+  document.getElementById('auth-toggle-login-text').style.display = '';
+  document.getElementById('auth-title').textContent = 'Log In';
+  clearAuthMessages();
+  return false;
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  clearAuthMessages();
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  try {
+    const r = await fetch(API + '/api/v1/auth/login', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Login failed');
+    currentUser = d;
+    onAuthenticated();
+  } catch (err) {
+    const el = document.getElementById('auth-error');
+    el.textContent = err.message;
+    el.style.display = '';
+  }
+  return false;
+}
+
+async function handleSignup(e) {
+  e.preventDefault();
+  clearAuthMessages();
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  try {
+    const r = await fetch(API + '/api/v1/auth/signup', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Signup failed');
+    showLogin();
+    const el = document.getElementById('auth-msg');
+    el.textContent = d.message;
+    el.style.display = '';
+  } catch (err) {
+    const el = document.getElementById('auth-error');
+    el.textContent = err.message;
+    el.style.display = '';
+  }
+  return false;
+}
+
+async function logout() {
+  await fetch(API + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' });
+  currentUser = null;
+  location.reload();
+}
+
+// ─── Admin: newsletter ───────────────────────────────────────────────────────
+
+let currentDraftId = null;
+
+async function loadNewsletterDrafts() {
+  const list = document.getElementById('newsletter-drafts-list');
+  try {
+    const r = await fetch(API + '/api/v1/admin/newsletter/drafts', { credentials: 'include' });
+    if (!r.ok) { list.innerHTML = '<div class="ai-panel-empty">Admin access required.</div>'; return; }
+    const drafts = await r.json();
+    list.innerHTML = drafts.length ? drafts.map(d => `
+      <div class="nl-draft-row" onclick="openNewsletterDraft(${d.id})">
+        <span class="nl-status ${d.status}">${d.status}</span>
+        <span style="flex:1;">${d.week_label} — ${d.subject}</span>
+        ${d.recipient_count != null ? `<span style="color:var(--muted);">${d.recipient_count} sent</span>` : ''}
+      </div>
+    `).join('') : '<div class="ai-panel-empty">No drafts yet — click "Generate New Draft".</div>';
+  } catch (e) {
+    list.innerHTML = '<div class="ai-panel-empty">Couldn\'t load drafts.</div>';
+  }
+}
+
+async function generateNewsletterDraft() {
+  const btn = document.querySelector('.admin-header .btn-primary');
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Generating… (fetches market data + news, ~1 min)';
+  try {
+    const r = await fetch(API + '/api/v1/admin/newsletter/generate', { method: 'POST', credentials: 'include' });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Failed to generate draft');
+    await loadNewsletterDrafts();
+    openNewsletterDraft(d.id);
+  } catch (e) {
+    alert(e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = original;
+  }
+}
+
+async function openNewsletterDraft(id) {
+  const r = await fetch(API + '/api/v1/admin/newsletter/' + id, { credentials: 'include' });
+  if (!r.ok) return;
+  const d = await r.json();
+  currentDraftId = id;
+  document.getElementById('nl-subject').value = d.subject;
+  document.getElementById('nl-content').value = d.content_html;
+  document.getElementById('newsletter-editor').style.display = '';
+  const sendBtn = document.getElementById('nl-send-btn');
+  sendBtn.disabled = d.status === 'sent';
+  sendBtn.textContent = d.status === 'sent'
+    ? `Already sent to ${d.recipient_count}`
+    : 'Approve & Send to All Subscribers';
+}
+
+async function saveNewsletterEdit() {
+  if (!currentDraftId) return;
+  const subject = document.getElementById('nl-subject').value;
+  const content_html = document.getElementById('nl-content').value;
+  try {
+    const r = await fetch(API + '/api/v1/admin/newsletter/' + currentDraftId, {
+      method: 'PATCH', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, content_html }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Save failed');
+    await loadNewsletterDrafts();
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
+async function approveAndSendNewsletter() {
+  if (!currentDraftId) return;
+  if (!confirm('Send this newsletter to every verified, subscribed user? This cannot be undone.')) return;
+  try {
+    const r = await fetch(API + '/api/v1/admin/newsletter/' + currentDraftId + '/approve_and_send', {
+      method: 'POST', credentials: 'include',
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Send failed');
+    alert(`Sent to ${d.recipient_count} subscribers.`);
+    await loadNewsletterDrafts();
+    openNewsletterDraft(currentDraftId);
+  } catch (e) {
+    alert(e.message);
   }
 }
 

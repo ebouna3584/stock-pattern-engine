@@ -6,10 +6,12 @@ DataFrame in a simple in-memory session store (upgrade to Redis/DB in prod).
 """
 
 import uuid
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from models.schemas import UploadResponse
 from models.enums import ValidationStatus
 from core.validator import validate_csv
+from auth.dependencies import get_current_user
+from db.models import User
 
 router = APIRouter()
 
@@ -18,7 +20,7 @@ _session_store: dict = {}
 
 
 @router.post("/upload_csv", response_model=UploadResponse)
-async def upload_csv(file: UploadFile = File(...)) -> UploadResponse:
+async def upload_csv(file: UploadFile = File(...), user: User = Depends(get_current_user)) -> UploadResponse:
     """
     Upload a CSV file conforming to the stock pattern engine template.
 

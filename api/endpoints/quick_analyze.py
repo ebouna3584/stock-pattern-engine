@@ -10,7 +10,7 @@ import logging
 from datetime import date
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import openpyxl
@@ -21,6 +21,8 @@ from scheduler.price_fetcher import fetch_history
 from core.engine import run_analysis
 from api.config import settings
 from models.schemas import AnalysisResponse
+from auth.dependencies import get_current_user
+from db.models import User
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -40,7 +42,7 @@ class QuickAnalyzeRequest(BaseModel):
 
 
 @router.post("/quick_analyze", response_model=AnalysisResponse)
-async def quick_analyze(request: QuickAnalyzeRequest) -> AnalysisResponse:
+async def quick_analyze(request: QuickAnalyzeRequest, user: User = Depends(get_current_user)) -> AnalysisResponse:
     """
     Fetch OHLCV data from Yahoo Finance and run the full pattern engine.
     No CSV upload required — just supply a ticker and buy date.
@@ -83,6 +85,7 @@ async def prefilled_template(
     ticker: str,
     buy_date: str,
     end_date: Optional[str] = None,
+    user: User = Depends(get_current_user),
 ):
     """
     Download a pre-filled Excel file with real OHLCV data from Yahoo Finance.

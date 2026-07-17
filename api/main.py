@@ -21,6 +21,9 @@ IS_VERCEL = os.getenv("VERCEL") is not None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    from db.database import init_db
+    init_db()
+
     # Vercel serverless functions can't host long-running background jobs
     # or persistent WebSocket connections — only start these off-Vercel.
     if not IS_VERCEL:
@@ -39,20 +42,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Wildcard origins can't be combined with allow_credentials=True (cookies) —
+# list real origins in CORS_ALLOWED_ORIGINS (add your Vercel domain there).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[o.strip() for o in settings.CORS_ALLOWED_ORIGINS.split(",") if o.strip()],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Register all API routes at import time so FastAPI builds the routing table
-from api.endpoints import upload, analyze, report, template
-from api.endpoints import watchlist, quick_analyze, ai_insights
+from api.endpoints import upload, analyze, report, template, auth
+from api.endpoints import watchlist, quick_analyze, ai_insights, newsletter_admin
 from fastapi import APIRouter
 
 api_router = APIRouter()
+api_router.include_router(auth.router,          tags=["Auth"])
 api_router.include_router(template.router,      tags=["Template"])
 api_router.include_router(upload.router,        tags=["Upload"])
 api_router.include_router(analyze.router,       tags=["Analysis"])
@@ -60,6 +66,7 @@ api_router.include_router(quick_analyze.router, tags=["Quick Analyze"])
 api_router.include_router(report.router,        tags=["Reports"])
 api_router.include_router(watchlist.router,     tags=["Watchlist"])
 api_router.include_router(ai_insights.router,   tags=["AI Insights"])
+api_router.include_router(newsletter_admin.router, tags=["Admin Newsletter"])
 
 # WebSocket + scheduled refresh require a persistent process — not available on Vercel
 if not IS_VERCEL:

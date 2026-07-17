@@ -46,14 +46,14 @@ def _cache_set(ticker: str, data: dict):
 
 # ── Article sourcing (NewsAPI -> yfinance -> Google News RSS) ───────────────
 
-def _fetch_newsapi(ticker: str, limit: int = 8) -> list:
+def _fetch_newsapi(ticker: str, limit: int = 8, query: str = None) -> list:
     if not settings.NEWS_API_KEY:
         return []
     try:
         resp = httpx.get(
             "https://newsapi.org/v2/everything",
             params={
-                "q": ticker,
+                "q": query or ticker,
                 "language": "en",
                 "sortBy": "publishedAt",
                 "pageSize": limit,
@@ -101,11 +101,11 @@ def _fetch_yfinance_news(ticker: str, limit: int = 8) -> list:
         return []
 
 
-def _fetch_google_news_rss(ticker: str, limit: int = 8) -> list:
+def _fetch_google_news_rss(ticker: str, limit: int = 8, query: str = None) -> list:
     try:
         resp = httpx.get(
             "https://news.google.com/rss/search",
-            params={"q": f"{ticker} stock", "hl": "en-US", "gl": "US", "ceid": "US:en"},
+            params={"q": query or f"{ticker} stock", "hl": "en-US", "gl": "US", "ceid": "US:en"},
             timeout=8,
         )
         resp.raise_for_status()
@@ -128,13 +128,22 @@ def _fetch_google_news_rss(ticker: str, limit: int = 8) -> list:
         return []
 
 
-def fetch_articles(ticker: str, limit: int = 8) -> list:
-    """Try NewsAPI, then yfinance, then Google News RSS — first non-empty source wins."""
-    for fetcher in (_fetch_newsapi, _fetch_yfinance_news, _fetch_google_news_rss):
-        articles = fetcher(ticker, limit)
-        if articles:
-            return articles
-    return []
+def fetch_articles(ticker: str, limit: int = 8, query: str = None) -> list:
+    """Try NewsAPI, then yfinance, then Google News RSS — first non-empty source wins.
+
+    `query` overrides the search text sent to NewsAPI/Google (yfinance's own
+    news is inherently ticker-scoped, so it ignores this). Worth passing for
+    tickers that are also common English words/abbreviations — e.g. broad
+    market ETFs like SPY, DIA, IWM — where a bare ticker search pulls in
+    unrelated noise ("spy" the word, "Dia de los Muertos", etc.).
+    """
+    articles = _fetch_newsapi(ticker, limit, query=query)
+    if articles:
+        return articles
+    articles = _fetch_yfinance_news(ticker, limit)
+    if articles:
+        return articles
+    return _fetch_google_news_rss(ticker, limit, query=query)
 
 
 # ── Claude synthesis ─────────────────────────────────────────────────────────
@@ -144,6 +153,12 @@ def _client():
         return None
     from anthropic import Anthropic
     return Anthropic(api_key=settings.ANTHROPIC_API_KEY)
+
+
+def get_anthropic_client():
+    """Public accessor — reused by newsletter/generator.py for the same
+    graceful-degrade-with-no-key behavior."""
+    return _client()
 
 
 def curate_articles(ticker: str, articles: list) -> list:
@@ -171,7 +186,7 @@ def curate_articles(ticker: str, articles: list) -> list:
     )
     try:
         msg = client.messages.create(
-            model="claude-haiku-4-5-20251001",
+            model="claude-3-haiku-20240307",
             max_tokens=800,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -224,7 +239,7 @@ def get_trade_thesis(ticker: str, technicals: dict, articles: list) -> Optional[
     )
     try:
         msg = client.messages.create(
-            model="claude-sonnet-5",
+            model="claude-3-5-sonnet-20241022",
             max_tokens=400,
             messages=[{"role": "user", "content": prompt}],
         )

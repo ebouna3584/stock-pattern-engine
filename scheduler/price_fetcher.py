@@ -15,7 +15,11 @@ logger = logging.getLogger(__name__)
 
 # Rolling caches
 _history_cache: dict = {}
-_last_payload:  dict = {}
+
+# Per-ticker cache, not one shared blob — watchlists are per-user now, so one
+# user's refresh must not clobber another user's cached tickers.
+_ticker_cache: dict = {}
+_last_meta: dict = {"timestamp": None, "market_open": False, "next_refresh_sec": 300}
 
 ET = pytz.timezone("America/New_York")
 
@@ -237,17 +241,21 @@ def run_full_refresh(tickers: list) -> dict:
             row["confidence"] = None
 
         results.append(row)
+        _ticker_cache[ticker] = row
 
-    payload = {
-        "timestamp":        datetime.now().isoformat(),
-        "market_open":      is_market_open(),
-        "next_refresh_sec": 300,
-        "results":          results,
-    }
-    _last_payload.clear()
-    _last_payload.update(payload)
-    return payload
+    _last_meta["timestamp"]   = datetime.now().isoformat()
+    _last_meta["market_open"] = is_market_open()
+
+    return {**_last_meta, "results": results}
 
 
-def get_last_payload() -> dict:
-    return dict(_last_payload)
+def get_cached_payload_for_tickers(tickers: list) -> dict:
+    """Build a payload from the shared per-ticker cache — used to answer a
+    user's own watchlist from data another user's refresh may have already
+    populated, without re-fetching from Yahoo Finance."""
+    results = [_ticker_cache[t] for t in tickers if t in _ticker_cache]
+    return {**_last_meta, "results": results}
+
+
+def has_cached_data() -> bool:
+    return bool(_ticker_cache)

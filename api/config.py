@@ -13,6 +13,27 @@ class Settings(BaseSettings):
     NEWS_API_KEY: Optional[str] = None
     AI_INSIGHT_CACHE_TTL_SEC: int = 1200  # 20 min — controls Anthropic/NewsAPI spend
 
+    # Accounts — defaults to local SQLite; point DATABASE_URL at hosted Postgres
+    # (Neon/Supabase/etc.) before deploying, since SQLite won't reliably persist
+    # on Vercel's serverless filesystem.
+    DATABASE_URL: str = "sqlite:///./app.db"
+    JWT_SECRET_KEY: str = "dev-only-insecure-secret-change-me"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_MINUTES: int = 60 * 24 * 14  # 14 days
+
+    # Email — verification links + the weekly newsletter. Left unset, emails are
+    # logged instead of sent (safe no-op for local dev without a Resend account).
+    RESEND_API_KEY: Optional[str] = None
+    FROM_EMAIL: str = "onboarding@resend.dev"
+    APP_BASE_URL: str = "http://localhost:8000"
+
+    # Only this email can approve/send the newsletter or reach admin endpoints.
+    ADMIN_EMAIL: str = "elizabethbounaaly@gmail.com"
+
+    # CORS — comma-separated list; wildcard "*" can't be combined with
+    # allow_credentials=True (cookies), so list real origins here once deployed.
+    CORS_ALLOWED_ORIGINS: str = "http://localhost:8000,http://127.0.0.1:8000"
+
     # Upload constraints
     MAX_UPLOAD_SIZE_MB: int = 10
     MAX_ROWS: int = 5000

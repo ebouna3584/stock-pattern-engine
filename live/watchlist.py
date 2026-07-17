@@ -1,67 +1,70 @@
 """
-Watchlist manager — max 4 tickers (free tier).
-Persists to watchlist.json in the project root.
+Watchlist manager — max 4 tickers per user (free tier), backed by the DB
+now that each account needs its own list instead of one shared global file.
 """
-import json
-from pathlib import Path
-from threading import Lock
+from sqlalchemy.orm import Session
+
+from db.models import WatchlistItem
 
 MAX_TICKERS = 4
-_STORE = Path(__file__).parent.parent / "watchlist.json"
-_lock = Lock()
 
 
-def load() -> dict:
-    """Returns {ticker: {purchase_price: float|None}}"""
-    if _STORE.exists():
-        try:
-            return json.loads(_STORE.read_text())
-        except Exception:
-            pass
-    return {}
+def load(db: Session, user_id: int) -> dict:
+    """Returns {ticker: {purchase_price: float|None}} for this user."""
+    items = db.query(WatchlistItem).filter(WatchlistItem.user_id == user_id).all()
+    return {i.ticker: {"purchase_price": i.purchase_price} for i in items}
 
 
-def save(data: dict):
-    with _lock:
-        _STORE.write_text(json.dumps(data, indent=2))
+def get_tickers(db: Session, user_id: int) -> list:
+    return list(load(db, user_id).keys())
 
 
-def get_tickers() -> list:
-    return list(load().keys())
-
-
-def add_ticker(ticker: str, purchase_price=None) -> dict:
+def add_ticker(db: Session, user_id: int, ticker: str, purchase_price=None) -> dict:
     ticker = ticker.upper().strip()
-    data = load()
-    if ticker in data:
+    existing = db.query(WatchlistItem).filter_by(user_id=user_id, ticker=ticker).first()
+    if existing:
         return {"ok": True, "message": f"{ticker} already in watchlist"}
-    if len(data) >= MAX_TICKERS:
-        raise ValueError(
-            f"Free tier limit: max {MAX_TICKERS} tickers. Remove one first."
-        )
-    data[ticker] = {"purchase_price": purchase_price}
-    save(data)
+
+    count = db.query(WatchlistItem).filter(WatchlistItem.user_id == user_id).count()
+    if count >= MAX_TICKERS:
+        raise ValueError(f"Free tier limit: max {MAX_TICKERS} tickers. Remove one first.")
+
+    db.add(WatchlistItem(user_id=user_id, ticker=ticker, purchase_price=purchase_price))
+    db.commit()
     return {"ok": True, "message": f"{ticker} added"}
 
 
-def remove_ticker(ticker: str) -> dict:
+def remove_ticker(db: Session, user_id: int, ticker: str) -> dict:
     ticker = ticker.upper().strip()
-    data = load()
-    if ticker not in data:
+    item = db.query(WatchlistItem).filter_by(user_id=user_id, ticker=ticker).first()
+    if not item:
         raise KeyError(f"{ticker} not in watchlist")
-    del data[ticker]
-    save(data)
+    db.delete(item)
+    db.commit()
     return {"ok": True, "message": f"{ticker} removed"}
 
 
-def set_purchase_price(ticker: str, price: float):
-    data = load()
+def set_purchase_price(db: Session, user_id: int, ticker: str, price: float):
     ticker = ticker.upper().strip()
-    if ticker not in data:
+    item = db.query(WatchlistItem).filter_by(user_id=user_id, ticker=ticker).first()
+    if not item:
         raise KeyError(f"{ticker} not in watchlist")
-    data[ticker]["purchase_price"] = price
-    save(data)
+    item.purchase_price = price
+    db.commit()
 
 
-def get_purchase_price(ticker: str):
-    return load().get(ticker.upper().strip(), {}).get("purchase_price")
+def get_purchase_price(db: Session, user_id: int, ticker: str):
+    item = db.query(WatchlistItem).filter_by(user_id=user_id, ticker=ticker.upper().strip()).first()
+    return item.purchase_price if item else None
+
+
+def get_all_distinct_tickers(db: Session) -> list:
+    """Union of tickers across every user's watchlist — the scheduler refreshes
+    each ticker once regardless of how many users are tracking it."""
+    rows = db.query(WatchlistItem.ticker).distinct().all()
+    return [r[0] for r in rows]
+
+
+def get_all_user_ids(db: Session) -> list:
+    rows = db.query(WatchlistItem.user_id).distinct().all()
+    return [r[0] for r in rows]

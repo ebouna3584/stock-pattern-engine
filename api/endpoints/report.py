@@ -5,7 +5,7 @@ Returns or streams a downloadable report in JSON or CSV format.
 """
 
 import json
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional
@@ -15,6 +15,8 @@ from models.schemas import AnalysisResponse
 from core.engine import run_analysis
 from api.endpoints.upload import get_session_df
 from reports.generator import to_json, to_csv_bytes
+from auth.dependencies import get_current_user
+from db.models import User
 
 router = APIRouter()
 
@@ -44,7 +46,7 @@ class ReportRequest(BaseModel):
 
 
 @router.post("/get_report")
-async def get_report(request: ReportRequest):
+async def get_report(request: ReportRequest, user: User = Depends(get_current_user)):
     """
     Download the analysis report for a session.
 
@@ -80,7 +82,7 @@ class PdfReportRequest(BaseModel):
 
 
 @router.post("/get_pdf_report", tags=["Reports"])
-async def get_pdf_report(request: PdfReportRequest):
+async def get_pdf_report(request: PdfReportRequest, user: User = Depends(get_current_user)):
     """
     Generate and download a full investor-grade PDF report.
 

@@ -6,13 +6,15 @@ No static file dependency — workbook is built in-memory on every request.
 """
 
 import io
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from templates.excel_generator import (
     build_template_bytes,
     FILENAME,
     TEMPLATE_VERSION,
 )
+from auth.dependencies import get_current_user
+from db.models import User
 
 router = APIRouter()
 
@@ -34,7 +36,7 @@ router = APIRouter()
         }
     },
 )
-async def download_template() -> StreamingResponse:
+async def download_template(user: User = Depends(get_current_user)) -> StreamingResponse:
     xlsx_bytes = build_template_bytes()
     return StreamingResponse(
         io.BytesIO(xlsx_bytes),

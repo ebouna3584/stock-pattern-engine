@@ -5,7 +5,7 @@ Runs the full pattern detection + risk + trade recommendation pipeline
 against the uploaded CSV session.
 """
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from models.schemas import (
@@ -14,6 +14,8 @@ from models.schemas import (
 )
 from core.engine import run_analysis
 from api.endpoints.upload import get_session_df
+from auth.dependencies import get_current_user
+from db.models import User
 
 router = APIRouter()
 
@@ -27,7 +29,7 @@ class AnalyzeRequest(BaseModel):
 
 
 @router.post("/analyze", response_model=AnalysisResponse)
-async def analyze(request: AnalyzeRequest) -> AnalysisResponse:
+async def analyze(request: AnalyzeRequest, user: User = Depends(get_current_user)) -> AnalysisResponse:
     """
     Run the full pattern detection pipeline on a previously uploaded CSV.
 
