@@ -186,7 +186,7 @@ def curate_articles(ticker: str, articles: list) -> list:
     )
     try:
         msg = client.messages.create(
-            model="claude-3-haiku-20240307",
+            model="claude-haiku-4-5-20251001",
             max_tokens=800,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -239,7 +239,7 @@ def get_trade_thesis(ticker: str, technicals: dict, articles: list) -> Optional[
     )
     try:
         msg = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-sonnet-5",
             max_tokens=400,
             messages=[{"role": "user", "content": prompt}],
         )
