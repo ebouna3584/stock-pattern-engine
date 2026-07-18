@@ -2018,6 +2018,33 @@
       border-radius: 8px; padding: 0.5rem 0.7rem; font-size: 12px; margin-bottom: 0.75rem;
     }
 
+    /* ─── Sectors ─────────────────────────────────────────────────────── */
+    #page-sectors { padding: 2rem; max-width: 1000px; margin: 0 auto; }
+    .sectors-header { margin-bottom: 1.25rem; }
+    .sector-chip-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+    .sector-chip {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 999px;
+      padding: 0.4rem 0.9rem; font-size: 12.5px; font-weight: 600; color: var(--dim);
+      cursor: pointer; transition: border-color 0.15s, color 0.15s;
+    }
+    .sector-chip:hover { border-color: var(--blue); color: var(--text); }
+    .sector-chip.active { border-color: var(--blue); color: var(--text); background: rgba(59,130,246,0.1); }
+    .sector-etf-summary {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 1rem 1.25rem; margin-bottom: 1rem;
+    }
+    .sector-etf-summary .cell-ticker { font-size: 15px; }
+    .sector-signal-counts { display: flex; gap: 0.75rem; font-size: 11.5px; color: var(--muted); }
+    .sector-signal-counts .buy  { color: var(--green); }
+    .sector-signal-counts .sell { color: var(--red); }
+    .sector-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .sector-table th {
+      text-align: left; color: var(--muted); font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border);
+    }
+    .sector-table td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); }
+
     /* ─── Admin newsletter ────────────────────────────────────────────── */
     #page-admin { padding: 2rem; max-width: 900px; margin: 0 auto; }
     .admin-header {
@@ -2065,6 +2092,7 @@
     <button class="nav-link active" onclick="navigate('home')" id="nav-home">Home</button>
     <button class="nav-link" onclick="navigate('screener')" id="nav-screener">Live Screener</button>
     <button class="nav-link" onclick="navigate('manual')" id="nav-manual">Manual Analysis</button>
+    <button class="nav-link" onclick="navigate('sectors')" id="nav-sectors">Sectors</button>
     <button class="nav-link" onclick="navigate('learn')" id="nav-learn">Learn</button>
     <button class="nav-link" onclick="navigate('admin')" id="nav-admin" style="display:none;">Admin</button>
   </div>
@@ -3425,6 +3453,23 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════ PAGE: SECTORS ═══════════════════════════════════════ -->
+<div id="page-sectors" class="page">
+  <div class="sectors-header">
+    <h1 style="font-size:1.4rem;margin-bottom:0.25rem;">Sector Recommendations</h1>
+    <p style="color:var(--muted);font-size:12.5px;max-width:640px;">
+      Ranked by the same pattern-detection engine used across the app — confidence, RSI/MACD, and risk-scored
+      entries. Probabilistic technical analysis, not personalized investment advice.
+    </p>
+  </div>
+
+  <div class="sector-chip-row" id="sector-chip-row"></div>
+
+  <div id="sector-content">
+    <div class="ai-panel-empty">Pick a sector above to see its ETF and top constituent signals.</div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════════════ PAGE: ADMIN NEWSLETTER ═══════════════════════════════════════ -->
 <div id="page-admin" class="page">
   <div class="admin-header">
@@ -3464,6 +3509,7 @@ const WS_URL = _isLocal
 console.log('API detected as:', API, '(isLocal:', _isLocal, ', origin:', _origin + ')');
 
 
+let currentPage = 'home';
 let ws = null;
 let wsConnected = false;
 let liveData = {};           // ticker -> result row
@@ -3618,6 +3664,9 @@ function navigate(page) {
   if (page === 'admin') {
     loadNewsletterDrafts();
   }
+  if (page === 'sectors' && !sectorListLoaded) {
+    loadSectorList();
+  }
 }
 
 // ─── Auth ──────────────────────────────────────────────────────────────────
@@ -3746,6 +3795,113 @@ async function logout() {
   await fetch(API + '/api/v1/auth/logout', { method: 'POST', credentials: 'include' });
   currentUser = null;
   location.reload();
+}
+
+// ─── Sectors ──────────────────────────────────────────────────────────────────
+
+let sectorListLoaded = false;
+let activeSector = null;
+
+async function loadSectorList() {
+  const row = document.getElementById('sector-chip-row');
+  try {
+    const r = await fetch(API + '/api/v1/sectors', { credentials: 'include' });
+    if (!r.ok) return;
+    const sectors = await r.json();
+    sectorListLoaded = true;
+    row.innerHTML = sectors.map(s => `
+      <button class="sector-chip" id="chip-${s.key}" onclick="selectSector('${s.key}')">${s.name} (${s.etf})</button>
+    `).join('');
+  } catch (e) {
+    row.innerHTML = '<div class="ai-panel-empty">Couldn\'t load sectors.</div>';
+  }
+}
+
+async function selectSector(key, forceRefresh) {
+  activeSector = key;
+  document.querySelectorAll('.sector-chip').forEach(c => c.classList.remove('active'));
+  const chip = document.getElementById('chip-' + key);
+  if (chip) chip.classList.add('active');
+
+  const content = document.getElementById('sector-content');
+  content.innerHTML = `
+    <div class="ai-panel-empty">
+      <div class="spinner"></div>
+      <div>Scanning sector constituents for patterns + signals…</div>
+    </div>`;
+
+  try {
+    const url = API + '/api/v1/sectors/' + key + (forceRefresh ? '?force_refresh=true' : '');
+    const r = await fetch(url, { credentials: 'include' });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Failed to load sector');
+    renderSectorContent(d);
+  } catch (e) {
+    content.innerHTML = `<div class="ai-panel-empty">${e.message}</div>`;
+  }
+}
+
+function renderSectorContent(d) {
+  const content = document.getElementById('sector-content');
+  const etf = d.etf || {};
+  const chg = etf.change_pct || 0;
+
+  const etfHtml = `
+    <div class="sector-etf-summary">
+      <div>
+        <span class="cell-ticker">${etf.ticker || d.key.toUpperCase()}</span>
+        <span style="color:var(--muted);font-size:12px;margin-left:0.5rem;">${d.name} sector ETF</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="cell-price">${fmtPrice(etf.live_price)}</span>
+        <span class="cell-chg ${chg >= 0 ? 'pos' : 'neg'}">${chg >= 0 ? '▲' : '▼'}${Math.abs(chg).toFixed(2)}%</span>
+        <span class="signal-pill ${(etf.signal || 'WATCH').toUpperCase()}">${(etf.signal || 'WATCH').toUpperCase()}</span>
+      </div>
+      <div class="sector-signal-counts">
+        <span class="buy">${d.buy_count} BUY</span>
+        <span class="sell">${d.sell_count} SELL</span>
+        <span>${d.watch_count} WATCH</span>
+        <button class="btn btn-ghost btn-sm" onclick="selectSector('${d.key}', true)" title="Bypass 30-min cache">↻ Refresh</button>
+      </div>
+    </div>`;
+
+  const rows = (d.stocks || []).map(r => {
+    const rchg   = r.change_pct || 0;
+    const conf   = r.confidence;
+    const signal = (r.signal || 'WATCH').toUpperCase();
+    const risk   = riskKey(r.risk || '');
+    return `
+      <tr>
+        <td class="cell-ticker">${r.ticker}</td>
+        <td class="cell-price">${fmtPrice(r.live_price)}</td>
+        <td class="cell-chg ${rchg >= 0 ? 'pos' : 'neg'}">${rchg >= 0 ? '▲' : '▼'}${Math.abs(rchg).toFixed(2)}%</td>
+        <td><span class="pattern-pill" title="${r.pattern || '—'}">${r.pattern || '—'}</span></td>
+        <td>
+          <div class="conf-cell">
+            <div class="conf-bar-wrap"><div class="conf-bar-fill" style="width:${conf || 0}%;background:${confColor(conf)}"></div></div>
+            <span class="conf-num ${confClass(conf)}">${conf != null ? conf : '—'}</span>
+          </div>
+        </td>
+        <td><span class="signal-pill ${signal}">${signal}</span></td>
+        <td class="cell-mono">${fmtPrice(r.entry)}</td>
+        <td class="cell-mono">${fmtPrice(r.stop_loss)}</td>
+        <td class="cell-mono">${fmtPrice(r.tp1)}</td>
+        <td class="cell-mono">${r.rr_ratio != null ? r.rr_ratio + 'x' : '—'}</td>
+        <td><span class="risk-pill ${risk}">${risk || r.risk || '—'}</span></td>
+      </tr>`;
+  }).join('');
+
+  content.innerHTML = etfHtml + `
+    <table class="sector-table">
+      <thead><tr>
+        <th>Ticker</th><th>Price</th><th>Chg%</th><th>Pattern</th><th>Conf</th>
+        <th>Signal</th><th>Entry</th><th>Stop</th><th>TP1</th><th>R/R</th><th>Risk</th>
+      </tr></thead>
+      <tbody>${rows || '<tr><td colspan="11" style="text-align:center;color:var(--muted);">No data</td></tr>'}</tbody>
+    </table>
+    <div class="ai-disclaimer" style="margin-top:0.75rem;">
+      Probabilistic technical analysis only — not investment advice. Cached ~30 min per sector.
+    </div>`;
 }
 
 // ─── Admin: newsletter ───────────────────────────────────────────────────────

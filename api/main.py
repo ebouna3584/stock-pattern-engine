@@ -54,7 +54,7 @@ app.add_middleware(
 
 # Register all API routes at import time so FastAPI builds the routing table
 from api.endpoints import upload, analyze, report, template, auth
-from api.endpoints import watchlist, quick_analyze, ai_insights, newsletter_admin
+from api.endpoints import watchlist, quick_analyze, ai_insights, newsletter_admin, sectors
 from fastapi import APIRouter
 
 api_router = APIRouter()
@@ -67,6 +67,7 @@ api_router.include_router(report.router,        tags=["Reports"])
 api_router.include_router(watchlist.router,     tags=["Watchlist"])
 api_router.include_router(ai_insights.router,   tags=["AI Insights"])
 api_router.include_router(newsletter_admin.router, tags=["Admin Newsletter"])
+api_router.include_router(sectors.router,       tags=["Sectors"])
 
 # WebSocket + scheduled refresh require a persistent process — not available on Vercel
 if not IS_VERCEL:
