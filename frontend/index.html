@@ -382,6 +382,29 @@
       color: var(--text);
       line-height: 1.35;
     }
+    .newsletter-subscribe-card {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem 1.1rem;
+      border-radius: 14px;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.22);
+    }
+    .newsletter-subscribe-text {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .newsletter-subscribe-icon { font-size: 20px; }
+    .newsletter-subscribe-text strong { font-size: 13px; color: var(--text); }
+    .newsletter-subscribe-sub { font-size: 11.5px; color: var(--muted); margin-top: 0.15rem; }
+    #newsletter-subscribe-btn { white-space: nowrap; flex-shrink: 0; }
+    #newsletter-subscribe-btn.subscribed {
+      background: var(--green-dim); border-color: rgba(16,185,129,0.35); color: var(--green);
+    }
     .hero-visual-card {
       background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(9,15,27,0.96));
       border: 1px solid var(--border);
@@ -2006,6 +2029,11 @@
       padding: 0.6rem 0.8rem; color: var(--text); font-size: 13px; font-family: inherit;
     }
     .auth-input:focus { outline: none; border-color: var(--blue); }
+    .auth-checkbox-row {
+      display: flex; align-items: center; gap: 0.5rem; text-align: left;
+      font-size: 12px; color: var(--dim); padding: 0.1rem 0.1rem;
+    }
+    .auth-checkbox-row input { accent-color: var(--blue); }
     .auth-submit { margin-top: 0.25rem; width: 100%; }
     .auth-toggle { margin-top: 1rem; font-size: 12px; color: var(--muted); }
     .auth-toggle a { color: var(--blue); text-decoration: none; }
@@ -2128,6 +2156,10 @@
     <form id="auth-form-signup" class="auth-form" style="display:none;" onsubmit="return handleSignup(event)">
       <input type="email" id="signup-email" class="auth-input" placeholder="Email" required autocomplete="email" />
       <input type="password" id="signup-password" class="auth-input" placeholder="Password (min 8 characters)" required minlength="8" autocomplete="new-password" />
+      <label class="auth-checkbox-row">
+        <input type="checkbox" id="signup-newsletter" checked />
+        <span>Subscribe to the weekly AI market newsletter</span>
+      </label>
       <button type="submit" class="btn btn-primary auth-submit">Sign Up</button>
     </form>
 
@@ -2165,6 +2197,17 @@
             <span class="hero-meta-label">Delivery</span>
             <strong>PDF + Excel exports</strong>
           </div>
+        </div>
+
+        <div class="newsletter-subscribe-card" id="newsletter-subscribe-card">
+          <div class="newsletter-subscribe-text">
+            <span class="newsletter-subscribe-icon">✉</span>
+            <div>
+              <strong>Weekly Market Newsletter</strong>
+              <div class="newsletter-subscribe-sub">AI-curated sector recap, sent every week. Admin-approved before it goes out.</div>
+            </div>
+          </div>
+          <button class="btn btn-sm" id="newsletter-subscribe-btn" onclick="toggleNewsletterSubscription()">…</button>
         </div>
       </div>
 
@@ -3707,6 +3750,37 @@ function onAuthenticated() {
   document.getElementById('user-pill').style.display = 'flex';
   document.getElementById('user-email-label').textContent = currentUser.email;
   document.getElementById('nav-admin').style.display = currentUser.is_admin ? '' : 'none';
+  updateNewsletterWidget();
+}
+
+function updateNewsletterWidget() {
+  const btn = document.getElementById('newsletter-subscribe-btn');
+  if (!btn || !currentUser) return;
+  const subscribed = !!currentUser.newsletter_subscribed;
+  btn.textContent = subscribed ? '✓ Subscribed' : 'Subscribe';
+  btn.classList.toggle('subscribed', subscribed);
+}
+
+async function toggleNewsletterSubscription() {
+  if (!currentUser) return;
+  const next = !currentUser.newsletter_subscribed;
+  const btn = document.getElementById('newsletter-subscribe-btn');
+  btn.disabled = true;
+  try {
+    const r = await fetch(API + '/api/v1/auth/newsletter_subscribe', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscribed: next }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || 'Failed to update subscription');
+    currentUser.newsletter_subscribed = d.newsletter_subscribed;
+    updateNewsletterWidget();
+  } catch (e) {
+    alert(e.message);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 function clearAuthMessages() {
@@ -3767,6 +3841,7 @@ async function handleSignup(e) {
   clearAuthMessages();
   const email = document.getElementById('signup-email').value;
   const password = document.getElementById('signup-password').value;
+  const newsletter_subscribed = document.getElementById('signup-newsletter').checked;
   try {
     const url = API + '/api/v1/auth/signup';
     console.log('Signup request to:', url);
@@ -3774,7 +3849,7 @@ async function handleSignup(e) {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, newsletter_subscribed }),
     });
     const d = await r.json();
     if (!r.ok) throw new Error(d.detail || 'Signup failed');

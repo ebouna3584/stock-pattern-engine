@@ -31,6 +31,11 @@ router = APIRouter()
 class SignupRequest(BaseModel):
     email: EmailStr
     password: str
+    newsletter_subscribed: bool = True
+
+
+class NewsletterSubscribeRequest(BaseModel):
+    subscribed: bool
 
 
 class LoginRequest(BaseModel):
@@ -70,6 +75,7 @@ async def signup(req: SignupRequest, db: Session = Depends(get_db)):
         hashed_password=hash_password(req.password),
         verification_token=generate_token() if email_configured else None,
         is_verified=not email_configured,
+        newsletter_subscribed=req.newsletter_subscribed,
     )
     db.add(user)
     db.commit()
@@ -107,6 +113,7 @@ async def login(req: LoginRequest, response: Response, db: Session = Depends(get
         "ok": True,
         "email": user.email,
         "is_admin": user.email.lower() == settings.ADMIN_EMAIL.lower(),
+        "newsletter_subscribed": user.newsletter_subscribed,
     }
 
 
@@ -123,3 +130,14 @@ async def me(user: User = Depends(get_current_user)):
         "is_admin": user.email.lower() == settings.ADMIN_EMAIL.lower(),
         "newsletter_subscribed": user.newsletter_subscribed,
     }
+
+
+@router.post("/auth/newsletter_subscribe")
+async def newsletter_subscribe(
+    req: NewsletterSubscribeRequest,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    user.newsletter_subscribed = req.subscribed
+    db.commit()
+    return {"ok": True, "newsletter_subscribed": user.newsletter_subscribed}
